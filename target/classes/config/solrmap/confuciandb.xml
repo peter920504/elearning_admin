@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SolrSearchConfig>
+	<business name="judbeDb">
+		<task name="searchTotal" handler="select">
+			<!-- Query settings -->
+			<str name="q.op">AND</str>
+			<str name="defType">edismax</str><!-- lucene,dismax,edismax -->
+			<str name="qf">
+				사건번호_s^5.0 법원명_s^3.0 대분류_fct^3.0 중분류_fct^3.0 세분류_fct^3.0 세세분류_fct^3.0 관할_fct^2.0 처분청_fct^2.0  
+				피소일_s^2.0 질병명_s^2.0 확정일_s^2.0 사건명_s^5.0 심급_fct^2.0 변론종결_s^2.0  
+				판결선고_han^5.0 비실명본문_han^5.0 비실명별지_han^5.0 
+			</str>
+			<str name="df">검색필드_han</str>
+			<!-- <str name="mm">100%</str> -->
+			<str name="q.alt">*:*</str>
+			<str name="rows">10</str>
+			<str name="fl">*,score</str>
+			
+			<bool name="mlt">false</bool>
+			
+			<str name="group.limit">5</str>
+	
+			<!-- Faceting defaults -->
+			<str name="facet">on</str>
+			<str name="facet.missing">false</str>
+			<str name="facet.sort">name</str>
+			<str name="facet.limit">50</str>
+			<str name="facet.mincount">0</str>
+			<str name="facet.field">{!ex=dt}검색분류_s</str>
+
+			<str name="facet.field">대분류_fct</str>
+			<str name="facet.field">중분류_fct</str>
+			<str name="facet.field">세분류_fct</str>
+			<str name="facet.field">세세분류_fct</str>
+			<str name="facet.field">관할_fct</str>
+			<str name="facet.field">처분청_fct</str>
+			<str name="facet.field">심급_fct</str>
+
+			<!-- Highlighting defaults -->
+			<str name="hl">on</str>
+			<str name="hl.fl">사건번호_s</str>
+			<str name="hl.fl">법원명_s</str>
+			<str name="hl.fl">피소일_s</str>
+			<str name="hl.fl">질병명_s</str>
+			<str name="hl.fl">확정일_s</str>
+			<str name="hl.fl">사건명_s</str>
+			<str name="hl.fl">변론종결_s</str>
+			<str name="hl.fl">판결선고_han</str>
+			<str name="hl.fl">비실명본문_han</str>
+			<str name="hl.fl">비실명별지_han</str>
+			<str name="hl.maxAnalyzedChars">4096000</str>
+			<str name="hl.encoder">html</str>
+			<str name="hl.simple.pre">&lt;em class="hl1"&gt;</str>
+			<str name="hl.simple.post">&lt;/em&gt;</str>
+			
+			<str name="f.검색필드_han.hl.snippets">3</str>
+			<str name="f.검색필드_han.hl.fragsize">130</str>
+			<str name="f.검색필드_han.hl.alternateField">검색필드_han</str>
+			<str name="f.검색필드_han.hl.maxAlternateFieldLength">130</str>
+
+			<str name="f.비실명본문_han.hl.snippets">3</str>
+			<str name="f.비실명본문_han.hl.fragsize">130</str>
+			<str name="f.비실명본문_han.hl.alternateField">비실명본문_han</str>
+			<str name="f.비실명본문_han.hl.maxAlternateFieldLength">130</str>
+
+			<str name="f.비실명별지_han.hl.snippets">3</str>
+			<str name="f.비실명별지_han.hl.fragsize">130</str>
+			<str name="f.비실명별지_han.hl.alternateField">비실명별지_han</str>
+			<str name="f.비실명별지_han.hl.maxAlternateFieldLength">130</str>
+		</task>
+
+	</business>
+
+</SolrSearchConfig>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.notice.NoticeDao">
+
+<resultMap type="NoticeVO" id="NoticeResult">
+		<result property="seq" column="SEQ"/>
+		<result property="title" column="TITLE"/>
+		<result property="contents" column="COTENTS"/>
+		<result property="managerSeq" column="MANAGER_SEQ"/>
+		<result property="managerName" column="MANAGER_NAME"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="modDate" column="MOD_DATE"/>
+		<result property="viewCount" column="VIEW_COUNT"/>
+		<result property="topYN" column="TOP_YN"/>
+		<result property="nextNo" column="NEXT_NO"/>
+		<result property="nextTitle" column="NEXT_TITLE"/>
+		<result property="preNo" column="PRE_NO"/>
+		<result property="preTitle" column="PRE_TITLE"/>
+		<result property="originFileName" column="ORIGIN_FILE_NAME"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="fileType" column="FILE_TYPE"/>
+</resultMap>
+
+<!-- 공지사항 등록  -->
+	<insert id="insertNotice" parameterType="noticeVO">
+		INSERT INTO NOTICE(
+				TITLE
+				, CONTENTS
+				, MANAGER_SEQ
+				, REG_DATE
+				, TOP_YN 
+			) VALUES (
+				#{title}
+				, #{contents}
+				, #{managerSeq} 
+				, sysdate()
+				, #{topYN}
+			)
+	</insert>
+	
+<!-- 공지사항 목록 수 -->
+	<select id="selectNoticeListCnt" resultType="java.lang.Integer" parameterType="NoticeVO">
+		SELECT 
+			COUNT(SEQ)
+		FROM NOTICE
+		<where>
+			1=1
+			<!-- <if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NAME LIKE CONCAT('%',#{q}, '%')
+						OR DEPARTMENT LIKE CONCAT('%',#{q}, '%')
+						OR PHONE LIKE CONCAT('%',#{q}, '%')
+						OR MC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>-->
+		</where>
+	</select>
+	
+	<!-- 공지사항 목록 조회 -->
+	<select id="selectNoticeList" resultMap="NoticeResult" parameterType="NoticeVO">
+		SELECT 
+			n.*
+			, m.NAME MANAGER_NAME
+		FROM NOTICE n join MANAGER m 
+		  ON n.MANAGER_SEQ = m.SEQ
+		<where>
+			1=1
+			<!-- <if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NAME LIKE CONCAT('%',#{q}, '%')
+						OR DEPARTMENT LIKE CONCAT('%',#{q}, '%')
+						OR PHONE LIKE CONCAT('%',#{q}, '%')
+						OR MC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>-->
+		</where>
+		<choose>
+			<when test="sortField == 'id'">
+		    	ORDER BY ID ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'name'">
+		    	ORDER BY NAME ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'department'">
+		    	ORDER BY DEPARTMENT ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'typeCode'">
+		     	ORDER BY M.TYPE_CODE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY TOP_YN DESC, SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 공지사항 상세페이지 조회 -->
+	<select id="selectNoticeDetail" resultType="NoticeVO" parameterType="NoticeVO">
+		SELECT a.*
+			 , b.*
+		 FROM (SELECT n.SEQ
+					, TITLE
+					, CONTENTS
+					, m.SEQ MANAGER_SEQ
+					, m.ID MANAGER_NAME
+					, DATE_FORMAT(n.REG_DATE, '%Y.%m.%d') REG_DATE
+					, DATE_FORMAT(n.MOD_DATE, '%Y.%m.%d') MOD_DATE
+					, VIEW_COUNT
+					, TOP_YN
+					, LEAD(n.SEQ , 1) OVER (ORDER BY n.SEQ) AS NEXT_NO
+					, LEAD(TITLE , 1) OVER (ORDER BY n.SEQ) AS NEXT_TITLE
+					, LAG(n.SEQ , 1) OVER (ORDER BY n.SEQ) AS PRE_NO
+					, LAG(TITLE , 1) OVER (ORDER BY n.SEQ) AS PRE_TITLE
+		 		FROM NOTICE n JOIN MANAGER m 
+				  ON n.MANAGER_SEQ = m.SEQ) a
+		 LEFT OUTER JOIN (SELECT n2.SEQ 
+		 						, bf.BOARD_SEQ 
+		 						, bf.ORIGIN_FILE_NAME
+		 						, bf.SAVE_FILE_NAME
+		 						, bf.FILE_SIZE 
+		 						, bf.FILE_TYPE 
+		 						, bf.FILE_PATH 
+		 					FROM NOTICE n2 JOIN BOARD_FILE bf 
+		 					  ON n2.SEQ = bf.BOARD_SEQ 
+		 					WHERE bf.REFERENCE = 0) b
+		  ON a.SEQ = b.BOARD_SEQ
+			WHERE a.SEQ = #{seq}
+			
+	</select>
+	
+	<!-- 조회수 증가  -->
+	<update id="updateNoticeViewCnt" parameterType="NoticeVO">
+		UPDATE NOTICE 
+		 SET VIEW_COUNT = VIEW_COUNT +1 
+		WHERE SEQ = #{seq};
+	</update>
+	
+	<!-- 공지사항 수정 -->
+	<update id="updateNotice" parameterType="NoticeVO">
+		UPDATE NOTICE 
+		 SET TITLE = #{title}
+		 	, CONTENTS = #{contents}
+		 	, TOP_YN = #{topYN}
+		 	, MOD_DATE = sysdate()
+		WHERE SEQ = #{seq};
+	</update>
+	
+	
+	<!-- 파일 업로드 -->
+	<insert id="uploadBoardFile" parameterType="BoardFileVO">
+		INSERT INTO BOARD_FILE (
+			BOARD_SEQ
+			, REFERENCE
+			, ORIGIN_FILE_NAME
+			, SAVE_FILE_NAME
+			, FILE_SIZE
+			, FILE_TYPE
+			, FILE_PATH
+		) VALUES (
+			#{boardSeq}
+			, #{reference}
+			, #{originFileName}
+			, #{saveFileName}
+			, #{fileSize}
+			, #{fileType}
+			, #{filePath}
+		)
+	</insert>
+ 	
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false">
+    <diskStore path="java.io.tmpdir" />
+ 
+    <defaultCache
+        maxElementsInMemory="20000"
+        eternal="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="36000"
+        overflowToDisk="false"
+        diskPersistent="false"
+        diskExpiryThreadIntervalSeconds="120"
+        memoryStoreEvictionPolicy="LRU">
+    </defaultCache>
+    
+<!--
+maxElementsInMemory = “20000” // 저장될객체의최대수
+eternal = “false” // 시간설정무시옵션, 이 값이 true이면  timeout 관련 설정은 무시되고, Element가 캐시에서 삭제되지 않는다.
+timeToIdleSeconds = “600” // Element가 지정한 시간 동안 사용(조회)되지 않으면 캐시에서 제거된다. 이 값이 0인 경우 조회 관련 만료 시간을 지정하지 않는다. 기본값은 0이다.
+timeToLiveSeconds = “3600” // Element가 존재하는 시간. 이 시간이 지나면 캐시에서 제거된다. 이 시간이 0이면 만료 시간을 지정하지 않는다. 기본값은 0이다.
+overflowToDisk = “false” // 메모리부족시디스크저장옵션
+diskPersistent = “false” // 디스크저장사용옵션
+diskExpiryThreadIntervalSeconds	Disk Expiry 쓰레드의 수행 시간 간격을 초 단위로 지정한다. 기본값은 120 이다.
+memoryStoreEvictionPolicy = “LRU” // 데이터제거알고리즘 옵션, 기본값은 LRU이다. FIFO와 LFU도 지정할 수 있다.
+statistics = “true” // JMX 통계정보갱신옵션
+-->    
+    <cache name="mainPGstore"
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="0" 
+        timeToLiveSeconds="36000"
+        overflowToDisk="false"
+        diskPersistent="false"
+        memoryStoreEvictionPolicy="LRU">
+    </cache>
+</ehcache>

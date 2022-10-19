@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+
+
+	<!-- elearning 사용자 웹사이트 레이아웃 -->
+	<!-- extends="layout.hf.front" -->
+
+
+	<definition name="layout.hf.front" template="/WEB-INF/views/front/main/front_layout.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/front/layout/head.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/front/layout/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/front/layout/footer.jsp" />
+	</definition>
+	
+	<definition name="front.main" extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/layout/mainContent.jsp" />
+	</definition>
+	
+	<definition name="front.eduContentList" extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/eduContent/eduContentsList.jsp" />
+	</definition>
+	
+	<definition name="front.eduContent" extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/eduContent/eduContentDetail.jsp" />
+	</definition>
+	
+	<definition name="front.myEduContent" extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/eduContent/myEduContentDetail.jsp" />
+	</definition>
+
+	<definition name="eduContent.videoPlayer" template="/WEB-INF/views/front/eduContent/videoPlayer.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/front/layout/head.jsp" />
+	</definition>
+
+	<definition name="front.login" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/login/login.jsp" />
+	</definition>
+	
+	<definition name="front.signUp" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/login/signUp.jsp" />
+	</definition>
+	
+	<definition name="front.findPW"  extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/login/findPW.jsp" /> 
+	</definition>
+	
+	<definition name="front.findPW2"  extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/login/findPW2.jsp" /> 
+	</definition>
+	
+	<definition name="front.findPW3"  extends="layout.hf.front">
+		<put-attribute name="content" value="/WEB-INF/views/front/login/findPW3.jsp" /> 
+	</definition>
+	
+	<definition name="front.userContentList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/user/userContentList.jsp" />
+	</definition>
+	
+	<definition name="front.userLikeContentList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/user/userLikeContentList.jsp" />
+	</definition>
+	
+	<definition name="front.userCartList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/user/userCartList.jsp" />
+	</definition>
+	
+	<definition name="front.profile" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/user/profile.jsp" />
+	</definition>
+
+	<definition name="notice.webNoticeList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/notice/noticeList.jsp" />
+	</definition>
+
+	<definition name="notice.webNoticeDetail" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/notice/noticeDetail.jsp" />
+	</definition>
+
+	<definition name="qna.qnaList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/qna/qnaList.jsp" />
+	</definition>
+
+	<definition name="qna.qnaWrite" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/qna/qnaWrite.jsp" />
+	</definition>
+
+	<definition name="qna.qnaDetail" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/qna/qnaDetail.jsp" />
+	</definition>
+
+	<definition name="faq.webFaqList" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/faq/faqList.jsp" />
+	</definition>
+
+	<definition name="faq.webFaqWrite" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/faq/faqWrite.jsp" />
+	</definition>
+
+	<definition name="faq.webFaqDetail" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/faq/faqDetail.jsp" />
+	</definition>
+
+	<definition name="report.errorReportWrite" extends="layout.hf.front"> 
+		<put-attribute name="content" value="/WEB-INF/views/front/report/errorReportWrite.jsp" />
+	</definition>
+
+
+	<!-- 관리자페이지 -->
+
+	<definition name="layout.admin.common" template="/WEB-INF/views/admin/layout/layout.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/admin/layout/head.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/admin/layout/header.jsp" />
+		<put-attribute name="sidebar" value="/WEB-INF/views/admin/layout/sidebar.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/admin/layout/footer.jsp" />
+	</definition>
+	
+	<definition name="layout.admin.pop" template="/WEB-INF/views/admin/layout/layout_pop.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/admin/layout/head.jsp" />
+	</definition>	
+
+	<definition name="manager.managerList" extends="layout.admin.common">
+		<put-attribute name="title" value="관리계정 목록" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/manager/managerList.jsp" />
+	</definition>
+	
+	<definition name="manager.managerWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="관리계정 등록/수정" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/manager/managerWrite.jsp" />
+	</definition>
+
+	<definition name="manager.managerUpdatePwd" extends="layout.admin.pop">
+		<put-attribute name="title" value="관리계정 비밀번호 수정" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/manager/managerUpdatePwd.jsp" />
+	</definition>
+
+	<definition name="manager.managerAccInactivate" extends="layout.admin.pop">
+		<put-attribute name="title" value="관리계정 비활성화" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/manager/managerAccInactivate.jsp" />
+	</definition>
+
+	<definition name="manager.managerLogList" extends="layout.admin.common">
+		<put-attribute name="title" value="관리계정 로그 목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/manager/managerLogList.jsp" />
+	</definition>
+	
+	<definition name="user.userList" extends="layout.admin.common">
+		<put-attribute name="title" value="사용자계정 목록" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/user/userList.jsp" />
+	</definition>
+	
+	<definition name="user.userWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="사용자 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userWrite.jsp" />
+	</definition>
+	
+	<definition name="user.userLogList" extends="layout.admin.common">
+		<put-attribute name="title" value="사용자로그 목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userLogList.jsp" />
+	</definition>
+	
+	<!-- 고객 소통 관련 시작 -->
+	<definition name="notice.noticeList" extends="layout.admin.common">
+		<put-attribute name="title" value="공지사항" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/notice/noticeList.jsp" />
+	</definition>
+	<definition name="notice.noticeWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="공지사항 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/notice/noticeWrite.jsp" />
+	</definition>
+
+	<definition name="comment.commentList" extends="layout.admin.common">
+		<put-attribute name="title" value="후기" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/comment/commentList.jsp" />
+	</definition>
+	
+	<definition name="qa.questionList" extends="layout.admin.common">
+		<put-attribute name="title" value="1:1 문의" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/qa/questionList.jsp" />
+	</definition>
+	
+	<definition name="qa.answerWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="1:1 답변" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/qa/answerWrite.jsp" />
+	</definition>
+	
+	<definition name="faq.faqList" extends="layout.admin.common"> 
+		<put-attribute name="title" value="faq 목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/faq/faqList.jsp" />
+	</definition>
+
+	<definition name="faq.faqWrite" extends="layout.admin.pop"> 
+		<put-attribute name="title" value="faq 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/faq/faqWrite.jsp" />
+	</definition>
+	
+	<!-- 고객 소통 관련 끝  -->
+
+	<definition name="user.boardLikeList" extends="layout.admin.common">
+		<put-attribute name="title" value="좋아요 글 목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/boardLikeList.jsp" />
+	</definition>
+	
+	<definition name="user.userDetail" extends="layout.admin.common">
+		<put-attribute name="title" value="" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userDetail.jsp" />
+	</definition>
+	
+	<definition name="user.userUpdate" extends="layout.admin.pop">
+		<put-attribute name="title" value="" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userUpdate.jsp" />
+	</definition>
+	
+	<definition name="user.userCodeList" extends="layout.admin.common">
+		<put-attribute name="title" value="사용자 코드유형목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userCodeList.jsp" />
+	</definition>
+	
+	<definition name="user.userCodeWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/user/userCodeWrite.jsp" />
+	</definition>
+	
+	<!-- 고객 소통 관련 시작 -->
+	<definition name="comment.commentList" extends="layout.admin.common">
+		<put-attribute name="title" value="후기" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/comment/commentList.jsp" />
+	</definition>
+	
+	<definition name="eduContents.eduContentsList" extends="layout.admin.common">
+		<put-attribute name="title" value="컨텐츠 목록" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/eduContents/eduContentsList.jsp" />
+	</definition>
+	
+	<definition name="eduContents.eduContentsWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="컨텐츠 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/eduContents/eduContentsWrite.jsp" />
+	</definition>
+	
+	<definition name="curriculum.curriculumList" extends="layout.admin.common">
+		<put-attribute name="title" value="교육과정 목록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/curriculum/curriculumList.jsp" />
+	</definition>
+	
+	<definition name="curriculum.curriculumWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="교육과정 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/curriculum/curriculumWrite.jsp" />
+	</definition>
+	
+		<definition name="curriculum.curriculumEdit" extends="layout.admin.pop">
+		<put-attribute name="title" value="교육과정 수정" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/curriculum/curriculumEdit.jsp" />
+	</definition>
+	
+	<definition name="category.categoryList" extends="layout.admin.common">
+		<put-attribute name="title" value="카테고리 목록" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/category/categoryList.jsp" />
+	</definition>
+	
+	<definition name="progress.progressList" extends="layout.admin.common">
+		<put-attribute name="title" value="진도 목록" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/progress/progressList.jsp" />
+	</definition>
+	
+	<definition name="progress.progressDetail" extends="layout.admin.pop">
+		<put-attribute name="title" value="진도 상세" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/progress/progressDetail.jsp" />
+	</definition>
+
+	<definition name="category.categoryWrite" extends="layout.admin.pop">
+		<put-attribute name="title" value="카테고리 작성" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/category/categoryWrite.jsp" />
+	</definition>
+
+
+	<!-- 관리자 로그인기능 -->
+
+	<definition name="layout.login" template="/WEB-INF/views/admin/layout/layoutLogin.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/admin/layout/head.jsp" />
+		<put-attribute name="header_login" value="/WEB-INF/views/admin/layout/header_login.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/admin/layout/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/admin/layout/footer.jsp" />
+	</definition>
+
+	<definition name="admin.home" extends="layout.admin.common">
+		<put-attribute name="title" value="관리자홈" />
+	   <put-attribute name="content" value="/WEB-INF/views/admin/main/home.jsp" />
+	</definition>
+
+	<!-- Login -->
+	<definition name="login.loginForm" extends="layout.login">
+		<put-attribute name="title" value="로그인" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/login/loginForm.jsp" />
+	</definition>
+
+	<definition name="login.loginDeny" extends="layout.login">
+		<put-attribute name="title" value="로그인" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/login/loginDeny.jsp" />
+	</definition>
+
+	<definition name="login.accessDeny" extends="layout.admin.common">
+		<put-attribute name="title" value="로그인" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/login/accessDeny.jsp" />
+	</definition>
+
+	<definition name="login.syswrite" extends="layout.login">
+		<put-attribute name="title" value="관리자등록" />
+		<put-attribute name="content" value="/WEB-INF/views/admin/login/sysWrite.jsp" />
+	</definition>
+
+
+</tiles-definitions>

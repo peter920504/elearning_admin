@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+ <!--
+ http://logging.apache.org/log4j/2.x/
+ http://logging.apache.org/log4j/2.x/manual/configuration.html
+ http://logging.apache.org/log4j/2.x/manual/appenders.html
+ http://logging.apache.org/log4j/2.x/manual/layouts.html
+ 
+ http://www.egovframe.go.kr/wiki/doku.php?id=egovframework:rte3:fdl:logging:log4j_2 
+ http://www.egovframe.go.kr/wiki/doku.php?id=egovframework:rte3:fdl:%EC%84%A4%EC%A0%95_%ED%8C%8C%EC%9D%BC%EC%9D%84_%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94_%EB%B0%A9%EB%B2%95
+ http://logging.apache.org/log4j/2.x/manual/configuration.html
+ http://acet.pe.kr/457
+ http://blog.kangwoo.kr/53
+ http://blog.kangwoo.kr/54
+ http://blog.kangwoo.kr/57
+ -->
+	<!-- Appender, Layout 설정 -->
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout/>
+		</Console>
+		<!--
+		<File name="file" fileName="./logs/file/sample.log" append="false">
+			<PatternLayout pattern="%d %5p [%c] %m%n"/>
+		</File>
+		-->
+	</Appenders>
+	
+	<!-- Logger 설정 -->
+	<Loggers>
+		<!-- attribute: name(Logger명), level(Log Level), additivity(중복로깅여부, true or false) -->
+		<!-- element: AppenderRef(Appender명) -->	
+		<Logger name="org.apache" level="INFO" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+			 
+		<Logger name="org.springframework" level="INFO" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+
+		<!-- mybatis, sql -->
+		<Logger name="com.ibatis" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="com.ibatis.common.jdbc.SimpleDataSource" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="java.sql.Connection" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="java.sql.Statement" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="java.sql.PreparedStatement" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="java.sql.ResultSet" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		 
+
+		<Logger name="org.apache.solr" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		 
+		<Logger name="kr.co.vacusoft" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
+		 
+<!-- 		<Logger name="pyondb.itkc" level="DEBUG" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger> -->
+		
+		<Root level="DEBUG">
+			<AppenderRef ref="console"/>
+		</Root>
+	</Loggers>
+ 
+</Configuration>

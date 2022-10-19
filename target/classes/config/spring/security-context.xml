@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<!--
+ 	<http auto-config="true">
+		<intercept-url pattern="/**" access="ROLE_USER" />
+	    <http-basic />
+	</http> 
+	-->
+	<!-- 
+	<http auto-config="true">
+		<form-login />
+		<http-basic />
+		<logout />
+		<intercept-url pattern="/**" access="ROLE_USER" />
+	</http>
+	-->
+
+	<http pattern="/resources/**" security='none' />
+	<http pattern="/data/**" security='none' />
+	<http pattern="/favicon.ico" security='none' />
+	<http pattern="/account/*" security='none' />
+
+	<http auto-config="true" use-expressions="true" >
+		<csrf disabled="true"/>
+		<intercept-url pattern="/admin/login" access="permitAll" />
+
+	    <intercept-url pattern="/admin/user/**" access="hasRole('ROLE_시스템관리자')"/>
+		<intercept-url pattern="/admin/account/**" access="hasRole('ROLE_시스템관리자')"/>
+		<intercept-url pattern="/admin/store/**" access="hasAnyRole('ROLE_시스템관리자','ROLE_일반관리자','ROLE_게시판관리자','ROLE_대출관리자','ROLE_일반사용자')"/>
+
+	    <intercept-url pattern='/**' access='permitAll' />
+
+
+	    <form-login login-page="/admin/login"
+	                authentication-failure-url="/admin/login?error=1"
+	                default-target-url="/admin/login/loginSuccess"
+					authentication-success-handler-ref="signinSuccessHandler"
+					authentication-failure-handler-ref="signinFailureHandler"
+	                always-use-default-target='true'/>
+
+		<access-denied-handler error-page="/admin/login/accessDeny"/>
+
+	    <logout logout-url="/admin/logout"
+	    		logout-success-url="/admin/login"
+	    		invalidate-session="true"/>
+
+	    <remember-me key="ntckdbKey" token-validity-seconds="2419200" /><!-- 약 2주 -->
+
+	    <!--
+	    <session-management>
+	    	<concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/" />
+	    </session-management>
+	    <session-management>
+			<concurrency-control max-sessions="1" session-registry-ref="sessionRegistry"/>
+	    </session-management>
+	    -->
+	</http>
+
+	<beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+	<beans:bean id="signinSuccessHandler" class="ntck.security.SigninSuccessHandler" />
+	<beans:bean id="signinFailureHandler" class="ntck.security.SigninFailureHandler">
+	<beans:property name="defaultFailureUrl" value="/admin/login/loginFail" />
+	</beans:bean>
+ 
+	<authentication-manager>
+		<authentication-provider ref="customAuthenticationProvider" />
+	</authentication-manager>
+
+	<beans:bean id="customAuthenticationProvider" class="ntck.security.CustomAuthenticationProvider" >
+		<beans:property name="sessionRegistry" ref="sessionRegistry"/>
+	</beans:bean>
+
+	<beans:bean id="jdbcUserService" class="ntck.security.JdbcUserDetailsManagerEx" >
+		<beans:property name="dataSource"     ref="dataSource" />
+		<beans:property name="dataSourceRole" ref="dataSource" />
+		
+		<!-- junk : spring-security 무력화 _ 20220530 -->
+		<!-- <beans:property name="usersByUsernameQuery" 
+			value=" SELECT 
+						sysadm, test, 1234, ROLE_시스템관리자, 15
+					FROM  
+						dual"/>
+		<beans:property name="authoritiesByUsernameQuery"
+			value=" SELECT 
+						sysadm, test, 1234, ROLE_시스템관리자, 15
+					FROM  
+						dual"/> -->
+<!--  		 <beans:property name="usersByUsernameQuery"   -->
+<!--  			value=" SELECT   -->
+<!--  						사용자ID, 이름, 비밀번호, 접속권한, 부서아이디  -->
+<!--  					FROM    -->
+<!--  						사용자계정    -->
+<!--  					WHERE 사용자ID = ?  "/>  -->
+<!--  		<beans:property name="authoritiesByUsernameQuery"  -->
+<!--  			value="SELECT   -->
+<!--  			사용자ID, 이름, 접속권한, 부서아이디  -->
+<!--  				FROM 사용자계정  -->
+<!--  				WHERE 사용자ID = ?"/> -->
+ 				
+ 		 <beans:property name="usersByUsernameQuery"  
+ 			value=" SELECT  
+ 						ID, NAME, PASSWORD, MC.TYPE_NAME, DEPARTMENT 
+ 					FROM   
+ 						MANAGER M
+ 					LEFT 
+ 						JOIN MANAGER_CODE MC 
+					ON 
+						M.TYPE_CODE = MC.TYPE_CODE   
+ 					WHERE ID = ?  "/> 
+ 		<beans:property name="authoritiesByUsernameQuery" 
+ 			value="SELECT  
+ 					ID, SALT, NAME, MC.TYPE_NAME, DEPARTMENT 
+ 				FROM 
+ 					MANAGER M
+ 				LEFT JOIN 
+ 					MANAGER_CODE MC 
+				ON 
+					M.TYPE_CODE = MC.TYPE_CODE  
+ 				WHERE ID = ?"/>    
+	</beans:bean>
+	
+	 
+
+	<beans:bean id="roleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl" >
+		<beans:property name="hierarchy">
+			<beans:value>
+				ROLE_ADMIN > ROLE_USER1
+				ROLE_USER1 > ROLE_USER2
+ 			</beans:value>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+	<!--
+ 	<global-method-security secured-annotations="enabled" jsr250-annotations="enabled" pre-post-annotations="enabled" >
+	</global-method-security>
+	-->
+ 
+</beans:beans>

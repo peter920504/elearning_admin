@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hf.elearning.category.CategoryDao">
+
+	<!-- 카테고리 목록 수 -->
+	<select id="selectCategoryListCnt" resultType="java.lang.Integer" parameterType="CategoryVO">
+		SELECT 
+			COUNT(*)
+		FROM CATEGORY
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						LEVEL LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR IS_USE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 카테고리 목록 조회 -->
+	<select id="selectCategoryList" resultType="CategoryVO" parameterType="CategoryVO">
+		SELECT 
+			c1.SEQ
+			, c1.LEVEL
+			, c1.TITLE
+			, c1.IS_USE
+			, c1.P_SEQ
+			, c2.TITLE as P_TITLE
+		FROM CATEGORY c1
+		JOIN CATEGORY c2
+		ON c1.P_SEQ = c2.SEQ
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						LEVEL LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR IS_USE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="sortField == 'title'">
+		    	ORDER BY TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'level'">
+		    	ORDER BY LEVEL ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'isUse'">
+		    	ORDER BY IS_USE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY P_SEQ ASC, LEVEL ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 카테고리목록 전체조회 -->
+	<!-- 카테고리 목록 조회 -->
+	<select id="selectAllCategoryList" resultType="CategoryVO" parameterType="CategoryVO">
+		SELECT 
+			SEQ
+			, LEVEL
+			, TITLE
+			, IS_USE
+			, P_SEQ
+		FROM CATEGORY
+	</select>
+	
+	<select id="selectCategoryDetail" parameterType="CategoryVO" resultType="CategoryVO">
+		SELECT 
+			SEQ,
+			LEVEL,
+			TITLE,
+			IS_USE,
+			P_SEQ
+		FROM CATEGORY
+		WHERE SEQ=#{seq}
+	</select>
+	
+	<select id="getSubCateList" parameterType="CategoryVO" resultType="CategoryVO">
+		SELECT 
+			SEQ,
+			LEVEL,
+			TITLE,
+			IS_USE,
+			P_SEQ
+		FROM CATEGORY
+		<where>
+			1=1
+			<if test = "pSeq != null and pSeq != ''">
+				AND P_SEQ=#{pSeq}
+			</if>
+			<if test = "level != null and level != ''" >
+				AND LEVEL=#{level}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getTitleBySeq" parameterType="java.lang.Integer" resultType="java.lang.String">
+		SELECT
+			TITLE
+		FROM CATEGORY
+		WHERE SEQ = #{seq}
+	</select>
+	
+	<select id="selectCategoryLv1" resultType="CategoryVO">
+		SELECT
+			SEQ
+			, TITLE
+		FROM CATEGORY
+		WHERE LEVEL = '1'
+	</select>
+
+	<select id="selectCategoryLv2" parameterType="java.lang.Integer" resultType="CategoryVO">
+		SELECT
+			SEQ
+			, TITLE
+		FROM CATEGORY
+		WHERE LEVEL = '2'
+		AND P_SEQ = #{pSeq}
+	</select>
+
+	<select id="selectCategoryLv3" parameterType="java.lang.Integer" resultType="CategoryVO">
+		SELECT
+			SEQ
+			, TITLE
+		FROM CATEGORY
+		WHERE LEVEL = '3'
+		AND P_SEQ = #{pSeq}
+	</select>
+	
+	<select id="selectPTitle" parameterType="java.lang.Integer" resultType="CategoryVO">
+		SELECT
+			(SELECT SEQ FROM CATEGORY C2 WHERE A.P_SEQ = C2.SEQ) P_SEQ
+			,(SELECT TITLE FROM CATEGORY C2 WHERE A.P_SEQ = C2.SEQ) P_TITLE
+			,A.SEQ SEQ
+			,A.TITLE TITLE
+		FROM (
+			SELECT
+				C.SEQ 
+				,C.TITLE 
+				,C.P_SEQ 
+				,C.`LEVEL` 
+			FROM CATEGORY C 
+			WHERE SEQ = #{seq}
+		) A
+	</select>
+	
+	<insert id="insertCategory" parameterType="CategoryVO" useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO `CATEGORY` (
+			`LEVEL` 
+			, TITLE 
+			, IS_USE 
+			, P_SEQ 
+		) VALUES (
+			#{level}
+			, #{title} 
+			, #{isUse}
+			, #{pSeq}
+		)
+	</insert>
+	
+	<update id="updatePSeq" parameterType="CategoryVO">
+		UPDATE CATEGORY SET P_SEQ = #{seq}
+		WHERE SEQ = #{seq}
+	</update>
+	
+	<update id="updateCategory" parameterType="CategoryVO">
+		UPDATE CATEGORY SET 
+		TITLE = #{title}
+		, IS_USE = #{isUse}
+		WHERE SEQ = #{seq}
+	</update>
+	
+	<delete id="deleteRecord" parameterType="java.lang.Integer">
+		DELETE FROM CATEGORY
+		WHERE 
+			SEQ = #{seq}
+	</delete>
+	
+	<select id="chkRowLevelData" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM CATEGORY
+		WHERE P_SEQ = #{seq}	
+	</select>
+	
+	
+	
+</mapper>

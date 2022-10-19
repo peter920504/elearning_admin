@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ntck.repository.SvcsUserDao">
+
+<!-- 	<select id="getById" parameterType="ntck.model.insearch.SvcsUserVOKey" resultType="ntck.model.insearch.SvcsUserVO"> -->
+<!-- 		SELECT  사용자ID, 이름, 접속권한, 비밀번호, 연락처, a.등록일, a.수정일, a.부서아이디, b.부서명 as 부서 FROM 사용자계정 as a -->
+<!-- 		left outer join 부서 as b ON (a.부서아이디 = b.부서아이디) -->
+<!-- 		WHERE  -->
+<!-- 			사용자ID = #{사용자ID} -->
+<!--  	</select> -->
+
+	<select id="getById" parameterType="ntck.model.insearch.SvcsUserVOKey" resultType="ntck.model.insearch.SvcsUserVO">
+		SELECT  ID, NAME, b.TYPE_NAME, PASSWORD, PHONE, DEPARTMENT FROM MANAGER as a
+		left outer join MANAGER_CODE as b ON (a.TYPE_CODE = b.TYPE_CODE)
+		WHERE 
+			ID = #{ID}
+ 	</select>
+
+	<select id="listPage" parameterType="ntck.model.insearch.BaseSearchVO" resultType="ntck.model.insearch.SvcsUserVO">
+		SELECT  사용자ID, 이름, 접속권한, 비밀번호, 연락처, a.등록일, a.수정일, a.부서아이디, b.부서명 as 부서 FROM 사용자계정 as a
+		left outer join 부서 as b ON (a.부서아이디 = b.부서아이디)
+	      			<include refid="pageWhere"/>
+	      			order by 
+				  <choose>
+				    <when test="sortField == '사용자ID'">
+				      사용자ID ${sortOrderSQL}
+				    </when>
+				    <when test="sortField == '이름'">
+				      이름 ${sortOrderSQL}
+				    </when>
+				    <when test="sortField == '연락처'">
+				      연락처 ${sortOrderSQL}
+				    </when>
+				    <when test="sortField == '접속권한'">
+				      접속권한 ${sortOrderSQL}
+				    </when>
+				    <otherwise>
+				      사용자ID ${sortOrderSQL} 
+				    </otherwise>
+				  </choose>
+
+		<![CDATA[ limit #{startNo}, #{recordCountPerPage}]]>
+	</select>
+	
+	<select id="countPage" parameterType="ntck.model.insearch.BaseSearchVO" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM 사용자계정 A
+		<include refid="pageWhere"/>
+	</select>
+	
+	<select id="countAll"  resultType="int">
+		SELECT 
+			COUNT(*) AS cnt 
+		FROM 
+			사용자계정
+	</select>
+
+	<sql id="pageWhere">
+		<where>
+			<if test="q != null and q !='' ">
+			  <choose>
+			    <when test='qw == "사용자ID"'>
+					사용자ID LIKE CONCAT('%',CONCAT(#{q}, '%'))
+			    </when>
+			    <when test='qw == "이름"'>
+					이름 LIKE CONCAT('%',CONCAT(#{q}, '%'))
+			    </when>
+				<otherwise>
+					(사용자ID LIKE CONCAT('%',CONCAT(#{q}, '%')) OR 이름 LIKE CONCAT('%',CONCAT(#{q}, '%')) )
+				</otherwise>
+			  </choose>
+		  </if>
+		</where>
+	</sql>
+
+	<insert id="insert" parameterType="ntck.model.insearch.SvcsUserVO">
+		INSERT INTO 사용자계정 (
+			사용자ID
+			,이름
+			,비밀번호
+			,부서아이디 
+			,연락처
+			,접속권한
+			,등록일
+			,수정일
+		) VALUES (
+			#{사용자ID}
+			,#{이름}
+			,#{비밀번호}
+			,#{부서아이디}
+			,#{연락처}
+			,#{접속권한}
+			,SYSDATE()
+			,SYSDATE()
+		)
+	</insert>
+
+	<update id="update" parameterType="ntck.model.insearch.SvcsUserVO">
+		UPDATE 사용자계정 SET 
+			이름 = #{이름},
+			부서아이디 = #{부서아이디},
+			연락처 = #{연락처},
+			접속권한 = #{접속권한},
+			수정일 = SYSDATE()
+		WHERE
+			사용자ID = #{사용자ID}
+	</update>
+	
+	<update id="updatePasswd" parameterType="ntck.model.insearch.SvcsUserVO">
+		UPDATE 사용자계정 SET 
+			비밀번호 = #{비밀번호}
+		WHERE
+			사용자ID = #{사용자ID}
+	</update>
+ 	
+	<delete id="delete" parameterType="ntck.model.insearch.SvcsUserVOKey">
+		DELETE 
+			FROM 사용자계정
+		WHERE
+			사용자ID = #{사용자ID}
+	</delete>
+
+
+</mapper>

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.manager.ManagerDao">
+
+	<!-- 관리계정 목록 수 -->
+	<select id="selectManagerListCnt" resultType="java.lang.Integer" parameterType="ManagerVO">
+		SELECT 
+			COUNT(M.SEQ)
+		FROM MANAGER M LEFT OUTER JOIN MANAGER_CODE MC 
+		ON M.TYPE_CODE = MC.TYPE_CODE
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NAME LIKE CONCAT('%',#{q}, '%')
+						OR DEPARTMENT LIKE CONCAT('%',#{q}, '%')
+						OR PHONE LIKE CONCAT('%',#{q}, '%')
+						OR MC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			<if test='listActYN == "Y" or listActYN == null'>
+				AND ACTIVATEYN = 'Y'				
+			</if>
+			<if test='listActYN == "N"'>
+				AND ACTIVATEYN = 'N'	
+			</if>
+		</where>
+	</select>
+	
+	<!-- 관리계정 목록 조회 -->
+	<select id="selectManagerList" resultType="ManagerVO" parameterType="ManagerVO">
+		SELECT 
+			SEQ
+			, M.ID
+			, M.PASSWORD
+			, M.NAME
+			, M.DEPARTMENT
+			, M.PHONE
+			, M.TYPE_CODE
+			, M.ACTIVATEYN
+			, MC.TYPE_NAME
+		FROM MANAGER M LEFT OUTER JOIN MANAGER_CODE MC 
+		  ON M.TYPE_CODE = MC.TYPE_CODE
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NAME LIKE CONCAT('%',#{q}, '%')
+						OR DEPARTMENT LIKE CONCAT('%',#{q}, '%')
+						OR PHONE LIKE CONCAT('%',#{q}, '%')
+						OR MC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			<if test='listActYN == "Y" or listActYN == null'>
+				AND ACTIVATEYN = 'Y'				
+			</if>
+			<if test='listActYN == "N"'>
+				AND ACTIVATEYN = 'N'	
+			</if>
+		</where>
+		<choose>
+			<when test="sortField == 'id'">
+		    	ORDER BY ID ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'name'">
+		    	ORDER BY NAME ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'department'">
+		    	ORDER BY DEPARTMENT ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'typeCode'">
+		     	ORDER BY M.TYPE_CODE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY ID ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 관리계정 단일 조회 -->
+	<select id="selectManagerDetail" resultType="ManagerVO" parameterType="ManagerVO">
+		SELECT
+			 M.SEQ
+			, M.ID
+			, M.NAME
+			, M.DEPARTMENT
+			, M.PHONE
+			, TYPE_CODE
+			, ACTIVATEYN
+			, MIN(ML.ACTION_DATE) REG_DATE
+			, IF((SELECT COUNT(ML.SEQ) 
+					FROM MANAGER M JOIN MANAGER_LOG ML  
+					  ON M.SEQ = ML.MANAGER_SEQ 
+					WHERE M.SEQ = #{seq}) > 1
+				, (SELECT MAX(ML.ACTION_DATE) 
+						 FROM MANAGER_LOG ML 
+						WHERE MANAGER_SEQ = #{seq}
+						  AND ML.ACTION_TYPE = 'M') 
+				, NULL) MOD_DATE
+  		FROM MANAGER M INNER JOIN MANAGER_LOG ML 
+  		 ON M.SEQ = ML.MANAGER_SEQ 
+  		 WHERE  M.SEQ = #{seq}
+	
+	</select>
+	
+	<select id="selectManagerDetailPwd" resultType="ManagerVO" parameterType="ManagerVO">
+		SELECT 
+			M.SEQ
+			, ID
+			, PASSWORD
+			, NAME
+			, DEPARTMENT
+			, PHONE
+			, TYPE_CODE
+			, ACTIVATEYN
+			, MIN(ML.ACTION_DATE) REG_DATE
+			, IF((SELECT COUNT(ML.SEQ) 
+					FROM MANAGER M JOIN MANAGER_LOG ML  
+					  ON M.SEQ = ML.MANAGER_SEQ 
+					WHERE M.SEQ = #{seq}) > 1, MAX(ML.ACTION_DATE), NULL) MOD_DATE
+			, SALT
+ 		FROM MANAGER M INNER JOIN MANAGER_LOG ML 
+ 		 ON M.SEQ = ML.MANAGER_SEQ 
+ 		 WHERE  M.SEQ = #{seq}
+	</select>
+	
+	
+	<!-- 관리계정 등록 -->
+	<insert id="insertManager" parameterType="managerVO" useGeneratedKeys="true" keyProperty="seq">
+<!-- 	<insert id="insertManager" parameterType="managerVO" useGeneratedKeys="true" keyProperty="seq"> -->
+	<!-- seq : AUTO_INCREMENT 걸려있음 -->
+		INSERT INTO MANAGER (
+			ID
+			, PASSWORD
+			, NAME
+			, DEPARTMENT
+			, PHONE
+			, TYPE_CODE 
+			, SALT
+		) VALUES (
+			#{id}
+			, #{password}
+			, #{name}
+			, #{department}
+			, #{phone}
+			, #{typeCode}
+			, #{salt}
+		);
+		 <selectKey keyProperty="seq" resultType="int" order="AFTER">
+	        SELECT SEQ FROM MANAGER WHERE ID = #{id}
+	    </selectKey>
+	</insert>
+	<insert id="insertManagerLog" parameterType="managerVO">
+		INSERT INTO MANAGER_LOG (
+				MANAGER_SEQ
+				,ACTION_DATE
+				,ACTION_TYPE
+				,ACTION_DESC
+			)values(
+				#{seq}
+				,sysdate()
+				,#{actionType}
+				,#{actionDesc}
+			); 
+	</insert>
+		
+	<update id="updateManager" parameterType="managerVO" >
+		UPDATE 
+			MANAGER
+		SET 
+			ID = #{id}
+			, NAME = #{name}
+			, DEPARTMENT = #{department}
+			, PHONE = #{phone}
+			, TYPE_CODE = #{typeCode}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<update id="updateManagePwd" parameterType="managerVO">
+		UPDATE 
+			MANAGER
+		SET 
+			PASSWORD = #{password}
+			, SALT = #{salt}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<select id="idDuplCheck" parameterType="managerVO" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM MANAGER 
+		WHERE ID = #{id};
+	</select>
+	
+	<update id="deactUpdate" parameterType="managerVO">
+		UPDATE 
+			MANAGER
+		SET 
+			ACTIVATEYN = 'N'
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<update id="actUpdate" parameterType="managerVO">
+		UPDATE 
+			MANAGER
+		SET 
+			ACTIVATEYN = 'Y'
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<select id="managerLogListCnt" parameterType="managerVO" resultType="int">
+		SELECT 
+			COUNT(ML.SEQ)
+		FROM MANAGER_LOG ML join MANAGER M
+		on ML.MANAGER_SEQ = M.SEQ
+		<where>
+				1=1
+				<if test="(q != null and q != '') or (keyWord!= '' and keyWord != null) ">
+					<if test="qw =='id' ">
+						AND ${qw} LIKE CONCAT('%',#{q}, '%')
+					</if>
+					<if test="qw == 'action_type' ">
+						AND ${qw} LIKE CONCAT('%',#{keyWord}, '%')
+					</if>
+					<if test="qw == null or qw == '' ">
+						AND 
+						( 
+							M.ID LIKE CONCAT('%',#{q}, '%')
+							OR ACTION_TYPE = #{keyWord}
+						)
+					</if>
+				</if>
+			</where>
+	</select>
+	
+	<select id="managerLogList" parameterType="managerVO" resultType="managerVO">
+		SELECT 
+			ML.SEQ
+			, MANAGER_SEQ
+			, M.ID 
+			, M.NAME 
+			, ACTION_DATE
+			, ACTION_TYPE
+			, ACTION_DESC
+		FROM MANAGER_LOG ML join MANAGER M
+		on ML.MANAGER_SEQ = M.SEQ
+		<where>
+				1=1
+				<if test="(q != null and q != '') or (keyWord!= '' and keyWord != null) ">
+					<if test="qw =='id' ">
+						AND ${qw} LIKE CONCAT('%',#{q}, '%')
+					</if>
+					<if test="qw == 'action_type' ">
+						AND ${qw} LIKE CONCAT('%',#{keyWord}, '%')
+					</if>
+					<if test="qw == null or qw == '' ">
+						AND 
+						( 
+							M.ID LIKE CONCAT('%',#{q}, '%')
+							OR ACTION_TYPE = #{keyWord}
+						)
+					</if>
+				</if>
+			</where>
+			<choose>
+			<when test="sortField == 'id'">
+		    	ORDER BY ID ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'actionDate'">
+		    	ORDER BY ACTION_DATE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'actionType'">
+		    	ORDER BY ACTION_TYPE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY ID ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+</mapper>

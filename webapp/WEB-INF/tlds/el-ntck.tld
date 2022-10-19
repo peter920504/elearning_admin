@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+        http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+    version="2.1">
+
+    <description>EL에서 함수실행</description>
+    <tlib-version>1.0</tlib-version>
+    <short-name>ELfunctions</short-name>
+
+    <function>
+        <description>apache common stringutils abbreviate</description>
+        <name>abbreviate</name>
+        <function-class>org.apache.commons.lang.StringUtils</function-class>
+        <function-signature>
+            java.lang.String abbreviate(java.lang.String, int)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>apache common stringutils removeEnd</description>
+        <name>removeEnd</name>
+        <function-class>org.apache.commons.lang.StringUtils</function-class>
+        <function-signature>
+            java.lang.String removeEnd(java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+	<function>
+        <description>ntck.util.humanfUtil urlEncode</description>
+        <name>urlEncode</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String urlEncode(java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>humanfUtil to3DecimalFmt</description>
+        <name>to3DecimalFmt</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String to3DecimalFmt(java.lang.Integer)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>ntck.util.humanfUtil contains</description>
+        <name>contains</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String contains(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>ntck.util.humanfUtil containsNone</description>
+        <name>containsNone</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String containsNone(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>ntck.util.humanfUtil containsAll2</description>
+        <name>containsAll2</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.boolean containsAll2(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>ntck.util.humanfUtil containsAll3</description>
+        <name>containsAll3</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.boolean containsAll3(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>ntck.util.humanfUtil containsAny2</description>
+        <name>containsAny2</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.boolean containsAny2(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>ntck.util.humanfUtil containsAny3</description>
+        <name>containsAny3</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.boolean containsAny3(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>firstTocken</description>
+        <name>firstTocken</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String firstTocken(java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>ntck.util.humanfUtil splitFindToken</description>
+        <name>splitFindToken</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String splitFindToken(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>   
+
+    <function>
+        <description>ntck.util.humanfUtil splitNotFindToken</description>
+        <name>splitNotFindToken</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String splitNotFindToken(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>   
+    
+    <function>
+        <description>ntck.util.humanfUtil removeBracket</description>
+        <name>removeBracket</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String removeBracket(java.lang.String)
+        </function-signature>
+    </function>       
+
+    <function>
+        <description>ntck.util.humanfUtil replaceBR</description>
+        <name>replaceBR</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String replaceBR(java.lang.String)
+        </function-signature>
+    </function>      
+
+    <function>
+        <description>ntck.util.humanfUtil stringJoinBrace</description>
+        <name>stringJoinBrace</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String stringJoinBrace(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>      
+
+    <function>
+        <description>ntck.util.humanfUtil stringJoin2W</description>
+        <name>stringJoin2W</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String stringJoin2W(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>      
+
+    <function>
+        <description>ntck.util.humanfUtil stringJoin3W</description>
+        <name>stringJoin3W</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String stringJoin3W(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>      
+
+    <function>
+        <description>ntck.util.humanfUtil stringJoin4W</description>
+        <name>stringJoin4W</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String stringJoin4W(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>      
+
+    <function>
+        <description>ntck.util.humanfUtil stringJoin5W</description>
+        <name>stringJoin5W</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String stringJoin5W(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>ntck.util.humanfUtil toViewStrCatePath</description>
+        <name>toViewStrCatePath</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String toViewStrCatePath(java.lang.String)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>ntck.util.humanfUtil ItemId2Name</description>
+        <name>itemId2Name</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String itemId2Name(java.lang.String)
+        </function-signature>
+    </function>       
+
+    <function>
+        <description>ntck.util.humanfUtil extractFileName</description>
+        <name>extractFileName</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String extractFileName(java.lang.String)
+        </function-signature>
+    </function>       
+
+    <function>
+        <description>ntck.util.humanfUtil extractFileExt</description>
+        <name>extractFileExt</name>
+        <function-class>ntck.util.humanfUtil</function-class>
+        <function-signature>
+            java.lang.String extractFileExt(java.lang.String)
+        </function-signature>
+    </function>       
+
+	<!-- Xml Relate -->
+
+	<function>
+        <description>ntck.util.XairDomUtils getInnerText</description>
+        <name>getInnerText</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String innerText(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils getSingleNodeValue</description>
+        <name>getSingleNodeValue</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String getSingleNodeValue(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>ntck.util.XairDomUtils getMultiNodeValue</description>
+        <name>getMultiNodeValue</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String getMultiNodeValue(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXslt</description>
+        <name>procXslt</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXsltDom</description>
+        <name>procXsltDom</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt(org.w3c.dom.Node, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXsltXPath</description>
+        <name>procXsltXPath</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt(java.lang.String, java.lang, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>ntck.util.XairDomUtils procXsltDomXPath</description>
+        <name>procXsltDomXPath</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt(org.w3c.dom.Node, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXslt2</description>
+        <name>procXslt2</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt2(java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXsltDom2</description>
+        <name>procXsltDom2</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt2(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>ntck.util.XairDomUtils procXsltXPath2</description>
+        <name>procXsltXPath2</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt2(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>ntck.util.XairDomUtils procXsltDomXPath2</description>
+        <name>procXsltDomXPath2</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            java.lang.String procXslt2(org.w3c.dom.Node, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>ntck.util.XairDomUtils loadXml</description>
+        <name>loadXml</name>
+        <function-class>ntck.util.XairDomUtils</function-class>
+        <function-signature>
+            org.w3c.dom.Document loadXml(java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>org.apache.xpath.XPathAPI selectSingleNode</description>
+        <name>selectSingleNode</name>
+        <function-class>org.apache.xpath.XPathAPI</function-class>
+        <function-signature>
+            org.w3c.dom.Node selectSingleNode(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <function>
+        <description>org.apache.xpath.XPathAPI selectNodeList</description>
+        <name>selectNodeList</name>
+        <function-class>org.apache.xpath.XPathAPI</function-class>
+        <function-signature>
+            org.w3c.dom.NodeList selectNodeList(org.w3c.dom.Node, java.lang.String)
+        </function-signature>
+    </function> 
+
+    <!-- Solr Relate -->
+	<function>
+        <description>SolrUtils toDispStr</description>
+        <name>toDispStr</name>
+        <function-class>kr.co.vacusoft.solrworks.solrj.SolrUtils</function-class>
+        <function-signature>
+            java.lang.String toString(java.lang.Object)
+        </function-signature>
+    </function>
+        
+	<function>
+        <description>StringUtil toFacetName</description>
+        <name>toFacetName</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String toFacetName(java.lang.Object)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>StrUtil convType</description>
+        <name>convType</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String convType(java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>StrUtil convName</description>
+        <name>convName</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String convName(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>StrUtil convDate</description>
+        <name>convDate</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String convDate(java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>SolrStringUtil replaceHL</description>
+        <name>replaceHL</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String replaceHL(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>SolrStringUtil replaceHLToken</description>
+        <name>replaceHLToken</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String replaceHLToken(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>    
+        
+	<function>
+        <description>SolrStringUtil replaceHLList</description>
+        <name>replaceHLList</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String replaceHL(java.lang.String, java.util.List)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>SolrStringUtil HL</description>
+        <name>HL</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String HL(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>SolrStringUtil HLTxt</description>
+        <name>HLTxt</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String HLTxt(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+	<function>
+        <description>SolrStringUtil HL2</description>
+        <name>HL2</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String HL2(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>    
+
+	<function>
+        <description>SolrStringUtil HLT</description>
+        <name>HLT</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String applyHLTocken(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>    
+
+	<function>
+        <description>SolrStringUtil stripHL</description>
+        <name>stripHL</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String stripHL(java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>SolrStringUtil extractHLTokenStr</description>
+        <name>extractHLTokenStr</name>
+        <function-class>ntck.service.util.SolrStringUtil</function-class>
+        <function-signature>
+            java.lang.String extractHLTokenStr(java.lang.String)
+        </function-signature>
+    </function>
+
+	<function>
+        <description>ItemInfoVO toShortItemId</description>
+        <name>toShortItemId</name>
+        <function-class>ntck.model.ItemInfoVO</function-class>
+        <function-signature>
+            java.lang.String toShortItemId(java.lang.String)
+        </function-signature>
+    </function>
+
+
+	<function>
+        <description>StrUtil strJoin</description>
+        <name>strJoin</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String  strJoin(java.lang.Object, java.lang.String)
+        </function-signature>
+    </function> 
+    
+	<function>
+        <description>SolrStringUtil strReJoin</description>
+        <name>strReJoin</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String  strReJoin(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+    
+    <function>
+        <description>StrUtil strReJoin</description>
+        <name>strReJoin2</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String  strReJoin2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function> 
+
+
+	<function>
+        <description>SolrStringUtil convH2E</description>
+        <name>convH2E</name>
+        <function-class>ntck.service.util.StrUtil</function-class>
+        <function-signature>
+            java.lang.String convH2E(java.lang.String)
+        </function-signature>
+    </function>
+
+
+</taglib>

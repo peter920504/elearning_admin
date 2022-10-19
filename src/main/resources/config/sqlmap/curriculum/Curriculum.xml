@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.curriculum.CurriculumDao">
+
+	<!-- 커리큘럼 목록 수 -->
+	<select id="selectCurriculumListCnt" resultType="java.lang.Integer" parameterType="CurriculumVO">
+		SELECT
+			COUNT(*)
+		FROM EDU_CONTENTS_CURRICULUM
+		<where>
+			1=1
+			<if test="q != null and q != ''">
+				<if test="qw != null and qw != '' and qw != 'CONTENTS_SEQ'">
+					AND ${qw} LIKE CONCAT('%',#{q},'%')
+				</if>
+				<if test="qw == 'CONTENTS_SEQ'">
+					AND CONTENTS_SEQ = #{q}
+				</if>
+				<if test="qw == null or qw == ''">
+					AND
+					(
+						SEQ LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR CONTENTS LIKE CONCAT('%',#{q}, '%')
+						OR CONTENTS_TYPE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCurriculumList" resultType="CurriculumVO" parameterType="CurriculumVO">
+		SELECT
+			SEQ,
+			CONTENTS_SEQ,
+			CONTENTS,
+			STEP,
+			TITLE,
+			YOUTUBE_ID,
+			CONTENTS_TYPE,
+			REG_DATE
+		FROM EDU_CONTENTS_CURRICULUM
+		<where>
+			1=1
+			<if test="q != null and q != ''">
+				<if test="qw != null and qw != '' and qw != 'CONTENTS_SEQ'">
+					AND ${qw} LIKE CONCAT('%',#{q},'%')
+				</if>
+				<if test="qw == 'CONTENTS_SEQ'">
+					AND CONTENTS_SEQ = #{q}
+				</if>
+				<if test="qw == null or qw == ''">
+					AND
+					(
+						SEQ LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR CONTENTS LIKE CONCAT('%',#{q}, '%')
+						OR CONTENTS_TYPE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY SEQ ${sortOrderSQL}
+		    </when>
+		    <when test="sortField == 'contents'">
+		    	ORDER BY CONTENTS ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'title'">
+		    	ORDER BY TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'contentsType'">
+		    	ORDER BY CONTENTS_TYPE ${sortOrderSQL}
+		    </when>
+		    <when test="sortField == 'regDate'">
+		    	ORDER BY REG_DATE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 교육과정 상세 -->
+	<select id="selectCurriculumDetail" resultType="curriculumVO" parameterType="curriculumVO">
+		SELECT
+			SEQ,
+			CONTENTS_SEQ,
+			CONTENTS,
+			STEP,
+			TITLE,
+			YOUTUBE_ID,
+			YOUTUBE_ID,
+			CONTENTS_TYPE,
+			REG_DATE
+		FROM EDU_CONTENTS_CURRICULUM 
+		WHERE SEQ = #{seq}
+	</select>
+	
+	<!-- 커리큘럼 등록시 컨텐츠 검색(조회) -->
+	<select id="getContentsByNameCnt" parameterType="CurriculumVO" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM EDU_CONTENTS
+		WHERE TITLE LIKE CONCAT('%',#{qw},'%')
+	</select>
+	
+	<select id="getContentsByName" parameterType="CurriculumVO" resultType="eduContentsVO">
+		SELECT * FROM EDU_CONTENTS
+		WHERE TITLE LIKE CONCAT('%',#{qw},'%')
+		LIMIT #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<insert id="insertCurriculum" parameterType="curriculumVO" useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO CURRICULUM(
+			CONTENTS_SEQ,
+			STEP,
+			TITLE,
+			YOUTUBE_ID,
+			CONTENTS_TYPE,
+			REG_DATE
+			)
+		VALUES (
+			#{contentsSeq},
+			#{step},
+			#{title},
+			#{youTubeId},
+			#{contentsType},
+			SYSDATE()
+		)
+	</insert>
+	
+	<update id="updateCurriculum" parameterType="curriculumVO">
+		UPDATE
+			CURRICULUM
+		SET
+			STEP = #{step},
+			TITLE = #{title},
+			YOUTUBE_ID = #{youTubeId},
+			CONTENTS_TYPE = #{contentsType}
+		WHERE
+			SEQ = #{seq}
+	</update>
+	
+	<delete id="deleteCurriculum" parameterType="curriculumVO">
+		DELETE FROM CURRICULUM WHERE SEQ = #{seq}
+	</delete>
+	
+	<delete id="delCurriculumSeqs" parameterType="list">
+		DELETE FROM CURRICULUM WHERE SEQ IN
+		<foreach collection="list" item="seq" index="index" open="(" close=")" separator=",">
+			#{seq}
+		</foreach>
+	</delete>
+	
+	<!-- 등록된 커리큘럼 개수 불러오기 getCurrentCount(CurriculumVO curriculumVO)-->
+	<select id="getCurrentCount" resultType="java.lang.Integer" parameterType="curriculumVO">
+		SELECT COUNT(*)
+		FROM CURRICULUM
+		WHERE CONTENTS_SEQ = #{contentsSeq}
+	</select>
+	
+	<!-- 등록된 예정 강의수 불러오기 -->
+	<select id="getClassCount" resultType="java.lang.Integer" parameterType="curriculumVO">
+		SELECT CLASS_COUNT
+		FROM EDU_CONTENTS
+		WHERE SEQ = #{contentsSeq}
+	</select>
+	
+	<!-- 이미 등록된 강의차수인지 확인 -->
+	<select id="checkClassCount" resultType="java.lang.Integer" parameterType="curriculumVO">
+		SELECT COUNT(*)
+		FROM CURRICULUM
+		WHERE CONTENTS_SEQ = #{contentsSeq} 
+			AND STEP = #{step}
+	</select>
+	
+	<!-- 강의 영상 내 재생목록 -->
+	<select id="selectCurriculumReplayList" resultType="CurriculumVO" parameterType="hashmap">
+		SELECT c.SEQ 
+			, c.CONTENTS_SEQ 
+			, c.STEP 
+			, c.TITLE 
+			, ec.SEQ 
+			, (SELECT MAX(c.STEP) 
+				FROM CURRICULUM c JOIN EDU_CONTENTS ec 
+				  ON c.CONTENTS_SEQ = ec.SEQ 
+				WHERE ec.SEQ = (SELECT CONTENTS_SEQ 
+								 FROM CURRICULUM 
+								 WHERE SEQ = #{curriculum.seq}
+			  )) MAX_STEP
+			, p.COMPLETEYN
+		FROM CURRICULUM c JOIN EDU_CONTENTS ec 
+		  ON c.CONTENTS_SEQ = ec.SEQ 
+		LEFT JOIN PROGRESS p
+		  ON c.SEQ = p.CURRICULUM_SEQ AND p.USER_SEQ = #{user.seq}
+		WHERE ec.SEQ = (SELECT CONTENTS_SEQ 
+						 FROM CURRICULUM 
+						WHERE SEQ = #{curriculum.seq}) 
+		ORDER BY c.STEP ASC;
+		
+	</select>
+	
+	<!-- completeYN 포함된 교육과정 목록 -->
+	<select id="selectCompleteCuriList" resultType="CurriculumVO" parameterType="hashmap">
+		SELECT c.seq,
+				c.CONTENTS_SEQ,
+				c.step,
+				c.TITLE,
+				c.YOUTUBE_ID,
+				c.CONTENTS_TYPE,
+				c.REG_DATE,
+				p.COMPLETEYN
+		FROM CURRICULUM c LEFT JOIN PROGRESS p
+		ON c.SEQ = p.CURRICULUM_SEQ AND p.USER_SEQ = #{user.seq}
+		WHERE c.CONTENTS_SEQ = #{content.seq}
+		ORDER BY c.seq
+	</select>
+	
+	<!-- completeYN 개수 -->
+	<select id="completeCount" parameterType="hashmap" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CURRICULUM c LEFT JOIN PROGRESS p
+		ON c.SEQ = p.CURRICULUM_SEQ AND p.USER_SEQ = #{user.seq}
+		WHERE c.CONTENTS_SEQ = #{content.seq} AND p.COMPLETEYN = 'Y'
+	</select>
+
+</mapper>

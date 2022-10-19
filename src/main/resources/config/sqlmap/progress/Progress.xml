@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.progress.ProgressDao">
+
+	<resultMap type="ProgressVO" id="ProgressResult">
+		<result property="seq" column="SEQ"/>
+		<result property="userSeq" column="USER_SEQ"/>
+		<result property="contentsSeq" column="CONTENTS_SEQ"/>
+		<result property="point" column="POINT"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="replayTime" column="REPLAY_TIME"/>
+		<result property="duration" column="DURATION"/>
+		<result property="completeYN" column="COMPLETEYN"/>
+		<collection property="userVO" resultMap="UserResult" />
+		<collection property="contentsVO" resultMap="ContentsResult" />
+		<collection property="curriculumVO" resultMap="CurriculumResult" />
+	</resultMap>
+	
+	<resultMap type="UserVO" id="UserResult">
+		<result property="id" column="ID"/>
+		<result property="nickName" column="NICK_NAME"/>
+		<result property="isUse" column="IS_USE"/>
+	</resultMap>
+	
+	<resultMap type="EduContentsVO" id="ContentsResult">
+		<result property="title" column="TITLE"/>
+		<result property="cate1" column="CATE1"/>
+		<result property="cate2" column="CATE2"/>
+		<result property="cate3" column="CATE3"/>
+		<result property="classCount" column="CLASS_COUNT"/>
+		<result property="difficulty" column="DIFFICULTY"/>
+		<result property="isService" column="IS_SERVICE"/>
+	</resultMap>
+	
+	<resultMap type="CurriculumVO" id="CurriculumResult">
+		<result property="title" column="TITLE"/>
+		<result property="step" column="STEP"/>
+	</resultMap>
+	
+
+	<!-- 진도관리 목록 수 -->
+	<select id="selectProgressListCnt" resultType="java.lang.Integer" parameterType="ProgressVO">
+		SELECT 
+			COUNT(*) 
+		FROM PROGRESS p
+		JOIN USER u ON p.USER_SEQ = u.SEQ
+		JOIN EDU_CONTENTS e ON p.CONTENTS_SEQ = e.SEQ
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						u.NICK_NAME LIKE CONCAT('%',#{q}, '%')
+						OR e.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR START_DATE LIKE CONCAT('%',#{q}, '%')
+						OR END_DATE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 진도관리 목록 조회 -->
+	<select id="selectProgressList" resultMap="ProgressResult" parameterType="ProgressVO">
+		SELECT 
+			u.NICK_NAME 
+			, p. *
+			, c.TITLE 
+			, c.STEP 
+			, ec.TITLE 
+			, ec.CLASS_COUNT 
+		FROM PROGRESS p
+		JOIN USER u ON p.USER_SEQ = u.SEQ
+		JOIN CURRICULUM c ON p.CURRICULUM_SEQ = c.SEQ
+		JOIN EDU_CONTENTS ec ON c.CONTENTS_SEQ = ec.SEQ
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						u.NICK_NAME LIKE CONCAT('%',#{q}, '%')
+						OR ec.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR p.START_DATE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			
+			<if test="datesS != null and datesS != '' ">
+				<![CDATA[ AND START_DATE > #{datesS}]]> 
+			</if>
+			<if test="datesE != null and datesE != '' ">
+				<![CDATA[ AND START_DATE < #{datesE}]]>  
+			</if>
+			<if test="dateS != null and dateS != '' ">
+				<![CDATA[ AND END_DATE > #{dateS}]]> 
+			</if>
+			<if test="dateE != null and dateE != '' ">
+				<![CDATA[ AND END_DATE < #{dateE} ]]> 
+			</if>
+			
+		</where>
+		<choose>
+			<when test="sortField == 'nickName'">
+		    	ORDER BY u.NICK_NAME ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'contents'">
+		    	ORDER BY ec.TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'point'">
+		    	ORDER BY p.POINT ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'startDate'">
+		    	ORDER BY p.START_DATE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'endDate'">
+		    	ORDER BY p.END_DATE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY u.NICK_NAME ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<select id="selectProgressDetail" parameterType="progressVO" resultMap="ProgressResult">
+		SELECT 
+			* 
+		FROM PROGRESS p 
+		JOIN USER u ON p.USER_SEQ = u.SEQ 
+		JOIN CURRICULUM c ON p.CURRICULUM_SEQ = c.SEQ
+		JOIN EDU_CONTENTS e ON c.CONTENTS_SEQ = e.SEQ
+		WHERE p.SEQ = #{seq}
+	</select>
+	
+	<select id="selectProgressRecord" parameterType="progressVO" resultMap="ProgressResult">
+		SELECT
+			*
+		FROM PROGRESS p
+		WHERE USER_SEQ = #{userSeq} 
+		  AND CURRICULUM_SEQ = #{curriculumSeq}
+	</select>
+	
+	<select id="selectProgressRecordCnt" parameterType="ProgressVO" resultType="java.lang.Integer" >
+		SELECT COUNT(*) COUNT 
+		FROM PROGRESS p 
+		WHERE USER_SEQ = #{userSeq} 
+			AND CURRICULUM_SEQ = #{curriculumSeq};
+	</select>
+	
+	<!-- 진도관리 진도 insert -->
+	<insert id="insertProgress" parameterType="managerVO" >
+		INSERT INTO PROGRESS (
+			USER_SEQ
+			, CURRICULUM_SEQ
+			, REPLAY_TIME
+			, DURATION
+			<if test="completeYN != null ">
+			, COMPLETEYN
+			</if>
+		) VALUES (
+			#{userSeq}
+			, #{curriculumSeq}
+			, #{replayTime}
+			, #{duration}
+			<if test="completeYN != null ">
+			, #{completeYN}
+			</if>
+		);
+	</insert>
+	<!-- 진도관리 시간 업데이트 -->
+	<update id="updateProgressReplayInfo" parameterType="ProgressVO">
+		UPDATE 
+			PROGRESS
+		SET
+			REPLAY_TIME = #{replayTime}
+			, COMPLETEYN = #{completeYN}
+		WHERE SEQ = #{seq}
+	</update>
+	
+
+</mapper>

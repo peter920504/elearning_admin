@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.report.ReportDao">
+	<insert id="insertReport" parameterType="ReportVO">
+		INSERT INTO REPORT (
+			CONTENTS
+			, WRITER
+			, EMAIL
+			, REG_DATE
+			, COMPLE_YN
+		) VALUES (
+			#{contents}
+			, #{writer}
+			, #{email}
+			, sysdate()
+			, 'N'
+		)
+	</insert>	
+</mapper>

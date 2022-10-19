@@ -1,0 +1,169 @@
+<!-- 
+https://github.com/dhotson/springy/
+ -->
+
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<title>springy - graphtest</title>
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+</head>
+
+<body>
+
+
+	<div id="wrap">
+		
+
+<script src="./jquery.1.3.2.min.js"></script>
+<script src="./springy.js"></script>
+<script src="./springy.js"></script>
+<script src="./springyui.js"></script>
+
+<script>
+var graph = new Springy.Graph();
+
+//fill - stroke - text
+//흰색     #DFE1E3 - #D4D6D7 - 검정 #000000
+//주황     #F25A29 - #DC4717 - 흰색 #FFFFFF
+//보라     #AD62CE - #9453B1 - 흰색 #FFFFFF
+//초록     #30B6AF - #46A39E - 흰색 #FFFFFF
+//밝은주황 #FF6C7C - #EB5D6C - 흰색 #FFFFFF
+//노랑     #FCC940 - #F3BA25 - 검정 #000000
+//파랑     #4356C0 - #3445A2 - 흰색 #FFFFFF
+var jsonEx1 = {
+		"nodes": [
+			{id:"center_id", label:"center", color: '#00A0B0', font:"italic small-caps bold 18px arial", shape:"rect", thick:"1", fill:"green", stroke:"blue"},
+			{id:"left_id", label:"left", shape:"round", radius:5,thick:"1", fill:"green", stroke:"blue"},
+			{id:"right_id", label:"right", shape:"ellispe", thick:"1", fill:"green", stroke:"blue"},
+			{id:"up_id", label:"up", shape:"circle",thick:"10", fill:"green", stroke:"blue"},
+			{id:"satellite_id", label:"satellite"}
+		],
+		"edges": [
+			{start:"center_id", end:"left_id", attr:{color: '#00A0B0', weight: '1.0', directional:true, label:'label',font:"italic small-caps bold 12px arial"}},
+			{start:"center_id", end:"right_id", attr:{color: '#6A4A3C', weight: '0.5', directional:false}},
+			{start:"center_id", end:"up_id", attr:{color: '#CC333F', weight: '3.0'}}
+		]
+	};
+
+var jsonEx2 = {
+		"nodes": [
+			{id:"center2_id", 	label:"중앙2",			shape:"round", 				color:"#000000", thick:"3", radius:5, fill:"#DFE1E3", stroke:"#D4D6D7", font:"small-caps bold 24px 나눔고딕", fontHeight:24},
+			{id:"left2_id", 	label:"좌측2",			shape:"circle", mass:0.5, 	color:"#FFFFFF", thick:"3", fill:"#F25A29", stroke:"#DC4717"},
+			{id:"right2_id", 	label:"우측2",			shape:"circle", mass:2.0, 	color:"#FFFFFF", thick:"3", fill:"#AD62CE", stroke:"#9453B1"},
+			{id:"up2_id", 		label:"상단2",			shape:"circle", 			color:"#FFFFFF", thick:"3", fill:"#30B6AF", stroke:"#46A39E"},
+			{id:"left21_id", 	label:"좌측2 테스트",	shape:"circle", 			color:"#FFFFFF", thick:"3", fill:"#FF6C7C", stroke:"#EB5D6C", font:"12px"},
+			{id:"right21_id", 	label:"우측2 테스트", 	shape:"circle", 			color:"#000000", thick:"3", fill:"#FCC940", stroke:"#F3BA25", font:"12px"},
+			{id:"up21_id", 		label:"상단2",    		shape:"circle", 			color:"#FFFFFF", thick:"3", fill:"#4356C0", stroke:"#3445A2"},
+			{id:"up22_id", 		label:"상단2 테스트",   shape:"circle", 			color:"#FFFFFF", thick:"3", fill:"rgba(255,0,0,0.3)", stroke:"rgba(255,0,0,0.5)"},
+		],
+		"edges": [
+			{start:"center2_id", end:"left2_id",  attr:{length:4.0, color: "#DFE1E3", weight: "5", directional:true, label:"label", font:"12px 나눔고딕"}},
+			{start:"center2_id", end:"right2_id", attr:{length:4.0, color: "#F25A29", weight: "0.5", directional:true}},
+			{start:"center2_id", end:"up2_id",    attr:{length:4.0, color: "#AD62CE", weight: "0.5"}},
+			{start:"center2_id", end:"left21_id", attr:{length:4.0, color: "#30B6AF", weight: "0.5", directional:true, label:"label", lblColor:"#000", font:"12px 나눔고딕"}},
+			{start:"center2_id", end:"right21_id",attr:{length:4.0, color: "#FF6C7C", weight: "0.5"}},
+			{start:"center2_id", end:"up21_id",   attr:{length:2.0, color: "#FCC940", weight: "0.5"}},
+			{start:"up2_id", 	 end:"up21_id",   attr:{length:2.0, color: "#DFE1E3", weight: "0.5", directional:false, lineStyle:"dash", label:"left", lblColor:"#000", font:"16px 나눔고딕"}},
+			{start:"up2_id", 	 end:"up22_id",   attr:{length:2.0, color: "#DFE1E3", weight: "0.5", directional:false, lineStyle:"dash", label:"left", lblColor:"#000", font:"16px 나눔고딕"}},
+		]
+	};
+	
+
+jsonEx2.nodes.forEach(function ShowResults(value, index, ar) {
+	value.shape = "circle";//rect, circle, round, ellispe
+	//value.radius = 10;
+	value.fixedSize = 40;
+	value.font = "11px 나눔고딕";
+});
+
+jsonEx2.edges.forEach(function ShowResults(value, index, ar) {
+	value.attr.font = "10px 나눔고딕";
+});
+	
+graph.loadJSONEx(jsonEx2);
+
+
+jQuery(function(){
+  var springy = window.springy = jQuery('#springydemo').springy({
+    graph: graph,
+	nodeFont: "14px 나눔고딕",
+	edgeFont: "8px 나눔고딕",
+	fontHeight: 16,
+	
+    nodeSelected: function(node){
+      console.log('Node selected: ' + JSON.stringify(node.data));
+    },
+  	nodeDbClicked: function(node){
+      console.log('Node DbClicked: ' + JSON.stringify(node.data));
+      //graph.loadJSONEx(jsonEx2);
+  	},
+
+	edgeSelected: function(edge){
+      console.log('Edge selected: ' + JSON.stringify(edge));
+    },
+	edgeDbClicked: function(edge){
+      console.log('Edge DbClicked: ' + JSON.stringify(edge));
+    },
+
+  });
+  /*
+  $(window).resize(function(){
+      var w = $(window).width(),
+      h = $(window).height();
+      
+      $('#springydemo').width(w);
+      $('#springydemo').height(h);
+ 	  //canvas.width = w; canvas.height = h // resize the canvas element to fill the screen
+	  //particleSystem.screenSize(w,h) // inform the system so it can map coords for us
+	});
+  */
+	
+});
+
+
+var jsonEx3 = {
+		"nodes": [
+			{id:"center_id", label:"center", color: '#00A0B0', font:"italic small-caps bold 18px arial", shape:"rect", thick:"1", fill:"green", stroke:"blue"},
+			{id:"left_id", label:"left", shape:"round", radius:5,thick:"1", fill:"green", stroke:"blue"},
+			{id:"right_id", label:"right", shape:"ellispe", thick:"1", fill:"green", stroke:"blue"},
+			{id:"up_id", label:"up", shape:"circle",thick:"10", fill:"green", stroke:"blue"},
+			{id:"satellite_id", label:"satellite", shape:"circle",thick:"2", fill:"yellow", stroke:"blue"}
+		],
+		"edges": [
+			{start:"center_id", end:"left_id", attr:{color: '#00A0B0', weight: '1.0', directional:true, label:'label',font:"italic small-caps bold 12px arial"}},
+			{start:"center_id", end:"right_id", attr:{color: '#6A4A3C', weight: '0.5', directional:false}},
+			{start:"center_id", end:"up_id", attr:{color: '#CC333F', weight: '3.0'}},
+			{start:"center_id", end:"left2_id",    attr:{length:4.0, color: "#AD62CE", weight: "0.5"}}
+		]
+	};
+	
+function doExpendNode() {
+	graph.loadJSONEx(jsonEx3);
+}
+
+function doRemoveNode() {
+	if(springy.getSelectedNode()!=null) {
+		graph.removeNode(springy.getSelectedNode());
+		graph.removeSingleNode();
+	}
+}
+
+</script>
+
+<canvas id="springydemo" width="800" height="600" style="border:1px solid #eee">
+</canvas>
+
+<div style="margin:10px">
+	<a href="javascript:doExpendNode()">[확장]</a>
+	<a href="javascript:doRemoveNode()">[제거]</a>
+</div>
+
+<div style="margin:10px">
+</div>
+	</div>
+</body>
+</html>

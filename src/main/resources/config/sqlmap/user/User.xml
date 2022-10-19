@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.user.UserDao">
+
+	<!-- 관리계정 목록 수 -->
+	<select id="selectUserListCnt" resultType="java.lang.Integer" parameterType="UserVO">
+		SELECT 
+			COUNT(*) 
+		FROM USER U
+		LEFT JOIN USER_CODE UC 
+		ON U.TYPE_CODE = UC.TYPE_CODE
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 	
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NICK_NAME LIKE CONCAT('%',#{q}, '%')
+						OR UC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+						OR IS_USE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 사용자계정 목록 조회 -->
+	<select id="selectUserList" resultType="UserVO" parameterType="UserVO">
+		SELECT 
+			U.SEQ
+			, ID
+			, PW
+			, NICK_NAME
+			, DESCRIPTION
+			, U.TYPE_CODE
+			, UC.TYPE_NAME
+			, ASSIGN
+			, PHONE
+			, JOIN_DATE
+			, QUIT_DATE
+			, ICON_FILE
+			, UI.FILE_PATH
+			, IS_USE
+		FROM USER U
+		LEFT JOIN USER_CODE UC 
+		ON U.TYPE_CODE = UC.TYPE_CODE
+		LEFT JOIN USER_IMAGE UI
+		ON U.ICON_FILE = UI.ORIGIN_FILE_NAME
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 	
+						ID LIKE CONCAT('%',#{q}, '%')
+						OR NICK_NAME LIKE CONCAT('%',#{q}, '%')
+						OR UC.TYPE_NAME LIKE CONCAT('%',#{q}, '%')
+						OR IS_USE LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY SEQ ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'id'">
+		    	ORDER BY ID ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'nickName'">
+		    	ORDER BY NICK_NAME ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'typeName'">
+		    	ORDER BY UC.TYPE_NAME ${sortOrderSQL}
+		    </when>
+		    <when test="sortField == 'assign'">
+		    	ORDER BY ASSIGN ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'isUse'">
+		     	ORDER BY IS_USE ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+		<!-- 사용자 상세정보 조회 --> 
+	<select id="selectUserDetail" resultType="UserVO" parameterType="UserVO">
+		SELECT 
+			U.SEQ
+			, ID
+			, NICK_NAME
+			, DESCRIPTION
+			, TYPE_CODE
+			, ASSIGN
+			, PHONE
+			, JOIN_DATE
+			, QUIT_DATE
+			, ICON_FILE
+			, UI.FILE_PATH
+			, IS_USE
+		FROM USER U
+		LEFT JOIN USER_IMAGE UI
+		ON U.SEQ = UI.USER_SEQ
+		WHERE U.SEQ = #{seq}
+	</select>
+	
+	<update id="updateUser" parameterType="UserVO">
+		UPDATE 
+			USER	
+		SET 
+			NICK_NAME = #{nickName}
+			,DESCRIPTION = #{description}
+			,TYPE_CODE = #{typeCode}
+			,ASSIGN = #{assign}
+			,PHONE = #{phone}
+			,JOIN_DATE = #{joinDate}
+			,ICON_FILE = #{iconFile}
+			,IS_USE = #{isUse}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<!-- 사용자 삭제 --> 
+	<delete id="deleteUser" parameterType="String">
+		DELETE 
+		FROM USER
+		WHERE ID = #{id}
+	</delete>
+	
+	<!-- 사용자 등록 -->
+	<insert id="insertUser" parameterType="UserVO" useGeneratedKeys="true" keyProperty="seq">
+	<!-- seq : AUTO_INCREMENT 걸려있음 -->
+		INSERT INTO USER (
+			ID,
+			SALT,
+			PW,
+			NICK_NAME,
+			DESCRIPTION,
+			TYPE_CODE,
+			ASSIGN,
+			PHONE,
+			ICON_FILE
+		) VALUES (
+			#{id},
+			#{salt},
+			#{pw},
+			#{nickName},
+			#{description},
+			#{typeCode},
+			#{assign},
+			#{phone},
+			#{iconFile}
+		);
+	</insert>
+	
+	<!-- ID 중복체크 -->
+	<select id="duplUserId" parameterType="String" resultType="int">
+		SELECT COUNT(*) 
+		FROM USER
+		WHERE ID = #{id} 
+	</select>
+	
+	<!-- 닉네임 중복체크 -->
+	<select id="duplNickName" parameterType="String" resultType="int">
+		SELECT COUNT(*) 
+		FROM USER
+		WHERE NICK_NAME = #{nickName} 
+	</select>
+	
+	
+	<select id="selectImageFileCnt" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM USER
+		WHERE SEQ=#{seq} AND ICON_FILE!='';
+	</select>
+	
+	<select id="selectImageFilePath" parameterType="int" resultType="String">
+		SELECT FILE_PATH
+		FROM USER_IMAGE
+		WHERE USER_SEQ=#{seq};
+	</select>
+	
+	<!--  체크박스 선택한 유저 삭제 -->
+	<delete id="delUserSeqs" parameterType="list">
+		DELETE FROM USER WHERE SEQ IN
+		<foreach collection="list" item="seqs" index="index" open="(" close=")" separator=",">
+			#{seqs}
+		</foreach>
+	</delete>
+	
+	<!-- 대표이미지 데이터 등록 -->
+	<insert id="uploadImage" parameterType="UserImageVO">
+		INSERT INTO USER_IMAGE (
+			USER_SEQ,
+			ORIGIN_FILE_NAME,
+			SAVE_FILE_NAME,
+			FILE_SIZE,
+			FILE_TYPE,
+			FILE_PATH
+		) VALUES (
+			#{userSeq},
+			#{originFileName},
+			#{saveFileName},
+			#{fileSize},
+			#{fileType},
+			#{filePath}
+		)
+	</insert>
+	
+	<!-- 대표이미지 데이터 삭제 -->
+	<delete id="deleteImage" parameterType="int">
+		DELETE 
+		FROM USER_IMAGE 
+		WHERE USER_SEQ = #{seq}
+	</delete>
+	
+	<!-- seq로 Id값 가져오기 -->
+	<select id="selectIdBySeq" parameterType="int" resultType="String">
+		SELECT ID
+		FROM USER
+		WHERE SEQ=#{seq};
+	</select>
+	
+	<!-- ID로 Salt값 가져오기 -->
+	<select id="selectSaltById" parameterType="String" resultType="String">
+		SELECT SALT
+		FROM USER
+		WHERE ID=#{id};
+	</select>
+	
+	<!-- id와 pw로 해당 사용자 맞는지 검증 -->
+	<select id="loginCheck" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM USER
+		WHERE ID=#{id} AND PW=#{pw};
+	</select>
+	
+	<!-- id로 해당 사용자 정보 가져오기 -->
+	<select id="getUserById" parameterType="String" resultType="UserVO">
+		SELECT
+			U.SEQ
+			, ID
+			, NICK_NAME
+			, DESCRIPTION
+			, U.TYPE_CODE
+			, UC.TYPE_NAME
+			, ASSIGN
+			, PHONE
+			, JOIN_DATE
+			, QUIT_DATE
+			, ICON_FILE
+			, UI.FILE_PATH
+			, IS_USE
+			, IS_SOCIAL
+			, NOTICE_AGREE
+		FROM USER U
+		LEFT JOIN USER_CODE UC 
+		ON U.TYPE_CODE = UC.TYPE_CODE
+		LEFT JOIN USER_IMAGE UI
+		ON U.ICON_FILE = UI.ORIGIN_FILE_NAME
+		WHERE ID=#{id};
+	</select>
+	
+	<!-- 비밀번호 찾기로 유저 비밀번호 변경 -->
+	<update id="updateUserPw" parameterType="UserVO">
+		UPDATE 
+			USER	
+		SET 
+			SALT = #{salt}
+			,PW = #{pw}
+		WHERE 
+			ID = #{id}
+	</update>
+	
+	<!-- profile section1내용 업데이트 -->
+	<update id="updateProfile1" parameterType="UserVO">
+		UPDATE 
+			USER	
+		SET 
+			NICK_NAME = #{nickName}
+			,DESCRIPTION = #{description}
+			,ICON_FILE = #{iconFile}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<!-- profile section2내용 업데이트 -->
+	<update id="updateProfile2" parameterType="UserVO">
+		UPDATE 
+			USER	
+		SET 
+			SALT = #{salt}
+			,PW = #{pw}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<!-- profile section3내용 업데이트 -->
+	<update id="updateProfile3" parameterType="UserVO">
+		UPDATE 
+			USER	
+		SET 
+			PHONE = #{phone}
+			,TYPE_CODE = #{typeCode}
+		WHERE 
+			SEQ = #{seq}
+	</update>
+	
+	<!-- addWishList -->
+	<insert id="addWishList" parameterType="BoardLikeVO">
+		INSERT INTO BOARD_LIKE(
+			BOARD_TYPE, 
+			BOARD_SEQ,
+			USER_SEQ
+		) VALUES (
+			#{boardType},
+			#{boardSeq},
+			#{userSeq}
+		);
+	</insert>
+	
+	<!-- delWishList -->
+	<delete id="delWishList" parameterType="BoardLikeVO">
+		DELETE FROM BOARD_LIKE
+		WHERE USER_SEQ = #{userSeq} AND BOARD_SEQ = #{boardSeq}
+	</delete>
+	
+	<!-- addCart -->
+	<insert id="addCart" parameterType="MyCartVO">
+		INSERT INTO MY_CART(
+			USER_SEQ,
+			CONTENTS_SEQ
+		) VALUES (
+			#{userSeq},
+			#{contentsSeq}
+		);
+	</insert>
+	
+	<select id="selectCartContentsList" parameterType="java.lang.Integer" resultType="EduContentsVO">
+		SELECT 			
+			ECC.SEQ,
+			ECC.TITLE,
+			ECC.CATE1,
+			ECC.CATE2,
+			ECC.CATE3,
+			ECC.CATE1_NAME,
+			ECC.CATE2_NAME,
+			ECC.CATE3_NAME,
+			ECC.AUTHOR,
+			ECC.DESCRIPTION,
+			ECC.SUMMARY,
+			ECC.REG_DATE,
+			ECC.SDATE,
+			ECC.DIFFICULTY,
+			ECC.SERVICE_TYPE,
+			ECC.CLASS_COUNT,
+			ECC.IS_CERTIFICATE,
+			ECC.IS_SERVICE,
+			EM.STORED_FILE_NAME,
+			EM.FILE_TYPE,
+			EM.FILE_PATH
+		FROM EDU_CONTENTS_CATEGORY ECC
+		LEFT OUTER JOIN EDU_MEDIA EM
+		ON ECC.SEQ = EM.CONTENTS_SEQ
+		AND EM.REFERENCE = 0
+		INNER JOIN MY_CART MC 
+		ON MC.CONTENTS_SEQ = ECC.SEQ
+		AND MC.USER_SEQ = #{userSeq};
+	</select>
+</mapper>

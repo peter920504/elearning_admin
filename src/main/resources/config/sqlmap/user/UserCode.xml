@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.ucode.UserCodeDao">
+
+	<!-- 코드리스트 목록 -->
+	<select id="selectCodeList" resultType="CodeListVO" parameterType="CodeListVO">
+		SELECT 
+		CODE_SEQ,
+		CODE_NAME,
+		CASE 
+			WHEN C.CODE_SEQ = '01' THEN (SELECT COUNT(*) FROM USER_CODE)
+			WHEN C.CODE_SEQ = '02' THEN (SELECT COUNT(*) FROM LOG_TYPE_CODE)
+		END AS totalCount
+		FROM CODE C
+		WHERE C.CODE_SEQ = '01' OR C.CODE_SEQ = '02';
+	</select>
+	
+	<!-- 사용자 유형코드 목록 조회 -->
+	<select id="selectUserCodeList" resultType="UserCodeVO" parameterType="UserCodeVO">
+		SELECT 
+			TYPE_CODE,
+			TYPE_NAME
+		<if test='dataType == null or dataType == ""'> 
+			FROM USER_CODE
+		</if>
+		<if test='dataType == "사용자 종류"'> 
+			FROM USER_CODE
+		</if>
+		<if test='dataType == "로그 활동구분"'> 
+			FROM LOG_TYPE_CODE
+		</if>
+		ORDER BY TYPE_CODE ASC;
+	</select>
+	
+	<!-- 사용자 유형코드 상세정보 조회 --> 
+	<select id="selectUserCodeDetail" resultType="UserCodeVO" parameterType="UserCodeVO">
+		SELECT
+			CODE_NAME AS DATA_TYPE,
+			TYPE_CODE,
+			TYPE_NAME
+		<if test='dataType == null or dataType == ""'> 
+			FROM USER_CODE T
+		</if>
+		<if test='dataType == "사용자 종류"'> 
+			FROM USER_CODE T
+		</if>
+		<if test='dataType == "로그 활동구분"'> 
+			FROM LOG_TYPE_CODE T
+		</if>
+		LEFT JOIN CODE C ON (C.CODE_SEQ = T.CODE_SEQ)
+		WHERE C.CODE_NAME = #{dataType} AND T.TYPE_CODE = #{typeCode};
+	</select>
+	
+	
+	<!-- 사용자 유형코드 등록 -->
+	<insert id="insertUserCode" parameterType="UserCodeVO" useGeneratedKeys="true" keyProperty="seq">
+		<if test='dataType == "사용자 종류"'>
+			INSERT INTO USER_CODE(
+				TYPE_CODE,
+				TYPE_NAME,
+				CODE_SEQ)
+			VALUES(
+				#{typeCode},
+				#{typeName},
+				'01'   
+				);	
+		</if>
+		<if test='dataType == "로그 활동구분"'> 
+			INSERT INTO LOG_TYPE_CODE (
+				TYPE_CODE,
+				TYPE_NAME,
+				CODE_SEQ 
+			) VALUES (
+				#{typeCode},
+				#{typeName},
+				'02'
+			);
+		</if>
+	</insert>
+	
+	<!-- 사용자 유형코드 수정 -->
+	<update id="updateUserCode" parameterType="UserCodeVO">
+		<if test='dataType == "사용자 종류"'>
+			UPDATE USER_CODE	
+			SET 
+				TYPE_NAME = #{typeName}
+			WHERE TYPE_CODE = #{typeCode};
+		</if>
+		<if test='dataType == "로그 활동구분"'> 
+			UPDATE LOG_TYPE_CODE	
+			SET 
+				TYPE_NAME = #{typeName}
+			WHERE TYPE_CODE = #{typeCode};
+		</if>
+	</update>
+	
+	<!-- 사용자 유형코드 삭제 --> 
+	<delete id="deleteUserCode" parameterType="UserCodeVO">
+		<if test='dataType == "사용자 종류"'>
+			DELETE 
+			FROM USER_CODE
+			WHERE TYPE_CODE = #{typeCode};
+		</if>
+		<if test='dataType == "로그 활동구분"'>
+			DELETE 
+			FROM LOG_TYPE_CODE
+			WHERE TYPE_CODE = #{typeCode};
+		</if>
+	</delete>
+
+	<!-- 중복된 코드값 체크 -->
+	<select id="duplTypeCode" parameterType="UserCodeVO" resultType="int">
+		SELECT COUNT(*) 
+		<if test='dataType == null or dataType == ""'> 
+			FROM USER_CODE T
+		</if>
+		<if test='dataType == "사용자 종류"'> 
+			FROM USER_CODE T
+		</if>
+		<if test='dataType == "로그 활동구분"'> 
+			FROM LOG_TYPE_CODE T
+		</if>
+		WHERE TYPE_CODE = #{typeCode};
+	</select>
+</mapper>

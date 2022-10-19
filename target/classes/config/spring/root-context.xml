@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+ 	<util:properties id="globalsProperties" location="classpath:/config/property/globals.properties" />	
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/config/message/message-common</value>
+			</list>
+		</property>
+		<property name="cacheSeconds">
+			<value>600</value>
+		</property>
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+	
+    <!-- 국제화 기능 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+	<!--  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" /> -->
+	  	        
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<property name="maxUploadSize" value="100000000" />
+	<property name="maxInMemorySize" value="100000000" />
+	<property name="defaultEncoding" value="utf-8"/>
+    </bean>
+    
+	<bean id="marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="packagesToScan" >
+			<list>
+<!-- 				<value>com.hf.elearning</value> -->
+				<value>ntck.model</value>
+			</list>
+		</property>
+		<!--
+		<property name="classesToBeBound">
+			<list>
+				<value>ntck.model.CateVO</value>
+				<value>ntck.model.BizInfoVO.BizStaffWapper</value>
+			</list>
+		</property>
+		-->
+		<property name="marshallerProperties">
+			<map>
+				<entry>
+                <key><util:constant static-field="javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT" /></key>
+              	<value type="java.lang.Boolean">true</value>
+              	</entry>
+				<entry>
+					<key><util:constant static-field="javax.xml.bind.Marshaller.JAXB_FRAGMENT"/></key>
+            		<value type="java.lang.Boolean">true</value>
+        		</entry>
+				<entry>
+					<key><util:constant static-field="javax.xml.bind.Marshaller.JAXB_ENCODING"/></key>
+            		<value type="java.lang.String">UTF-8</value>
+        		</entry>
+        		
+        		<!--
+	            <entry key="jaxb.formatted.output">
+	                <value type="boolean">true</value>
+	            </entry>
+	            -->
+			</map>
+		</property>
+	</bean>
+	
+<!--     <context:component-scan base-package="com.hf.elearning"> -->
+    <context:component-scan base-package="com.hf.elearning, ntck">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+    		
+</beans>

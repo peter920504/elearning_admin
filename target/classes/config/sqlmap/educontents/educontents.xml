@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.educontents.EduContentsDao">
+
+	<!-- 교육컨텐츠 목록 수 -->
+	<select id="selectEduContentsListCnt" resultType="java.lang.Integer" parameterType="EduContentsVO">
+		SELECT 
+			COUNT(*) 
+		FROM EDU_CONTENTS
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						SEQ LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR DIFFICULTY LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			<if test="searchCate1 != null and searchCate1 != ''">
+				AND CATE1 = #{searchCate1}
+			</if>
+			<if test="searchCate2 != null and searchCate2 != ''">
+				AND CATE2 = #{searchCate2}
+			</if>
+			<if test="searchCate3 != null and searchCate3 != ''">
+				AND CATE3 = #{searchCate3}
+			</if> 			
+		</where>
+	</select>
+	
+	<select id="selectEduContentsList" resultType="EduContentsVO" parameterType="EduContentsVO">
+		SELECT 			
+					SEQ,
+					TITLE,
+					CATE1,
+					CATE2,
+					CATE3,
+					CATE1_NAME,
+					CATE2_NAME,
+					CATE3_NAME,
+					AUTHOR,
+					DESCRIPTION,
+					SUMMARY,
+					REG_DATE,
+					SDATE,
+					DIFFICULTY,
+					SERVICE_TYPE,
+					CLASS_COUNT,
+					IS_CERTIFICATE,
+					IS_SERVICE
+				FROM EDU_CONTENTS_CATEGORY
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						SEQ LIKE CONCAT('%',#{q}, '%')
+						OR TITLE LIKE CONCAT('%',#{q}, '%')
+						OR DIFFICULTY LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			<if test="searchCate1 != null and searchCate1 != ''">
+				AND CATE1 = #{searchCate1}
+			</if>
+			<if test="searchCate2 != null and searchCate2 != ''">
+				AND CATE2 = #{searchCate2}
+			</if>
+			<if test="searchCate3 != null and searchCate3 != ''">
+				AND CATE3 = #{searchCate3}
+			</if> 			
+			<!--
+			<if test="searchCate1 != null and searchCate1 != ''">
+				AND CATE1_NAME LIKE CONCAT('%', #{searchCate1}, '%')
+			</if>
+			<if test="searchCate2 != null and searchCate2 != ''">
+				AND CATE2_NAME LIKE CONCAT('%', #{searchCate2}, '%')
+			</if>
+			<if test="searchCate3 != null and searchCate3 != ''">
+				AND CATE3_NAME LIKE CONCAT('%', #{searchCate3}, '%')
+			</if> 
+			-->
+		</where>
+
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY SEQ ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'title'">
+		    	ORDER BY TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'difficulty'">
+		    	ORDER BY DIFFICULTY ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<select id="webEduContentsList" resultType="EduContentsVO" parameterType="EduContentsVO">
+		SELECT 			
+					ec.SEQ,
+					ec.TITLE,
+					ec.CATE1,
+					ec.CATE2,
+					ec.CATE3,
+					ec.CATE1_NAME,
+					ec.CATE2_NAME,
+					ec.CATE3_NAME,
+					ec.AUTHOR,
+					ec.DESCRIPTION,
+					ec.SUMMARY,
+					ec.REG_DATE,
+					ec.SDATE,
+					ec.DIFFICULTY,
+					ec.SERVICE_TYPE,
+					ec.CLASS_COUNT,
+					ec.IS_CERTIFICATE,
+					ec.IS_SERVICE,
+					em.STORED_FILE_NAME,
+					em.FILE_TYPE,
+					em.FILE_PATH
+				FROM EDU_CONTENTS_CATEGORY ec
+				LEFT OUTER JOIN EDU_MEDIA em
+				ON ec.SEQ = em.CONTENTS_SEQ
+				AND em.REFERENCE = 0
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ec.${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ec.SEQ LIKE CONCAT('%',#{q}, '%')
+						OR ec.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR ec.DIFFICULTY LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+			<if test="searchCate1 != null and searchCate1 != ''">
+				AND ec.CATE1_NAME = #{searchCate1}
+			</if>
+			<if test="searchCate2 != null and searchCate2 != ''">
+				AND ec.CATE2_NAME = #{searchCate2}
+			</if>
+			<if test="searchCate3 != null and searchCate3 != ''">
+				AND ec.CATE3_NAME = #{searchCate3}
+			</if> 			
+			<!--
+			<if test="searchCate1 != null and searchCate1 != ''">
+				AND CATE1_NAME LIKE CONCAT('%', #{searchCate1}, '%')
+			</if>
+			<if test="searchCate2 != null and searchCate2 != ''">
+				AND CATE2_NAME LIKE CONCAT('%', #{searchCate2}, '%')
+			</if>
+			<if test="searchCate3 != null and searchCate3 != ''">
+				AND CATE3_NAME LIKE CONCAT('%', #{searchCate3}, '%')
+			</if> 
+			-->
+		</where>
+
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY ec.SEQ ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'title'">
+		    	ORDER BY ec.TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'difficulty'">
+		    	ORDER BY ec.DIFFICULTY ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY ec.SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 컨텐츠 상세조회 -->
+<!-- 	<select id="selectEduContentsDetail" resultType="eduContentsVO" parameterType="eduContentsVO">
+		SELECT 			
+			e.SEQ,
+			e.TITLE,
+			e.CATE1,
+			e.CATE2,
+			e.CATE3,
+			c1.TITLE as CATE1_NAME,
+			c2.TITLE as CATE2_NAME,
+			c3.TITLE as CATE3_NAME,
+			e.AUTHOR,
+			e.DESCRIPTION,
+			e.SUMMARY,
+			e.REG_DATE,
+			e.SDATE,
+			e.DIFFICULTY,
+			e.SERVICE_TYPE,
+			e.CLASS_COUNT,
+			e.IS_CERTIFICATE,
+			e.IS_SERVICE,
+			e.MEDIA_SEQ
+		FROM EDU_CONTENTS e
+			JOIN CATEGORY c1 ON e.CATE1 = c1.SEQ 
+			JOIN CATEGORY c2 ON e.CATE2 = c2.SEQ 
+			JOIN CATEGORY c3 ON e.CATE3 = c3.SEQ
+		WHERE e.SEQ = #{seq}
+	</select> -->
+	
+	<!-- 컨텐츠 상세조회 -->
+	<select id="selectEduContentsDetail" resultType="eduContentsVO" parameterType="eduContentsVO">
+		SELECT 			
+			SEQ,
+			TITLE,
+			CATE1,
+			CATE2,
+			CATE3,
+			CATE1_NAME,
+			CATE2_NAME,
+			CATE3_NAME,
+			AUTHOR,
+			DESCRIPTION,
+			SUMMARY,
+			REG_DATE,
+			SDATE,
+			DIFFICULTY,
+			SERVICE_TYPE,
+			CLASS_COUNT,
+			IS_CERTIFICATE,
+			IS_SERVICE
+		FROM EDU_CONTENTS_CATEGORY
+		WHERE SEQ = #{seq}
+	</select>
+	
+	<!-- 컨텐츠 등록 -->
+	<insert id="insertEduContents" parameterType="eduContentsVO" useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO EDU_CONTENTS (
+			TITLE,
+			CATE1,
+			CATE2,
+			CATE3,
+			AUTHOR,
+			DESCRIPTION,
+			SUMMARY,
+			REG_dATE,
+			SDATE,
+			DIFFICULTY,
+			SERVICE_TYPE,
+			CLASS_COUNT,
+			IS_CERTIFICATE,
+			IS_SERVICE
+		) VALUES (
+			#{title},
+			#{cate1},
+			#{cate2},
+			#{cate3},
+			#{author},
+			#{description},
+			#{summary},
+			SYSDATE(),
+			#{dateS},
+			#{difficulty},
+			#{serviceType},
+			#{classCount},
+			#{isCertificate},
+			#{isService}
+		)
+	</insert>
+	
+	<update id="updateEduContents" parameterType="eduContentsVO">
+		UPDATE
+			EDU_CONTENTS
+		SET
+			TITLE = #{title},
+			CATE1 = #{cate1},
+			CATE2 = #{cate2},
+			CATE3 = #{cate3},
+			AUTHOR = #{author},
+			DESCRIPTION = #{description},
+			SUMMARY = #{summary},
+			SDATE = #{dateS},
+			DIFFICULTY = #{difficulty},
+			SERVICE_TYPE = #{serviceType},
+			CLASS_COUNT = #{classCount},
+			IS_CERTIFICATE = #{isCertificate},
+			IS_SERVICE = #{isService}
+		WHERE
+			SEQ = #{seq}
+	</update>
+	
+	<delete id="deleteEduContents" parameterType="eduContentsVO">
+		DELETE FROM EDU_CONTENTS WHERE SEQ = #{seq}
+	</delete>
+	
+	<delete id="delEduContentsSeqs" parameterType="list">
+		DELETE FROM EDU_CONTENTS WHERE SEQ IN
+		<foreach collection="list" item="seq" index="index" open="(" close=")" separator=",">
+			#{seq}
+		</foreach>
+	</delete>
+	
+	<!-- 컨텐츠 삭제
+	<delete id="deleteEduContents" parameterType="list">
+		DELETE FROM EDU_CONTENTS WHERE SEQ IN
+		<foreach collection="list" item="seq" index="index" open="(" close=")" separator=",">
+			#{seq}
+		</foreach>
+	</delete> -->
+	
+	<!-- 첨부파일 관련 -->
+	
+	<insert id="registerEduFile" parameterType="eduMediaVO">
+		INSERT INTO EDU_MEDIA (
+			CONTENTS_SEQ,
+			REFERENCE,
+			ORIGIN_FILE_NAME,
+			STORED_FILE_NAME,
+			FILE_SIZE,
+			FILE_TYPE,
+			FILE_PATH
+		) VALUES (
+			#{contentsSeq},
+			#{reference},
+			#{originFileName},
+			#{storedFileName},
+			#{fileSize},
+			#{fileType},
+			#{filePath}
+		)
+	</insert>
+	
+	<select id="selectEduFile" parameterType="eduMediaVO" resultType="eduMediaVO">
+		SELECT
+			SEQ,
+			CONTENTS_SEQ,
+			REFERENCE,
+			ORIGIN_FILE_NAME,
+			STORED_FILE_NAME,
+			FILE_SIZE,
+			FILE_TYPE,
+			FILE_PATH
+		FROM EDU_MEDIA
+		WHERE CONTENTS_SEQ=#{contentsSeq} AND REFERENCE=#{reference}
+	</select>
+	
+	<select id="selectEduFileCnt" parameterType="eduMediaVO" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM EDU_MEDIA
+		WHERE CONTENTS_SEQ=#{contentsSeq} AND REFERENCE=#{reference}
+	</select>
+	
+	<delete id="deleteEduMedia" parameterType="eduMediaVO">
+		DELETE FROM EDU_MEDIA WHERE CONTENTS_SEQ=#{contentsSeq} AND REFERENCE=#{reference}
+	</delete>
+	
+	
+	<select id="selectMyContentsList" parameterType="java.lang.Integer" resultType="myContentsVO">
+		SELECT SEQ,
+				USER_SEQ,
+				CONTENTS_SEQ,
+				REG_DATE
+		FROM MY_CONTENTS
+		WHERE USER_SEQ = #{userSeq}
+	</select>
+	
+	<select id="selectMyEduContentsList" parameterType="EduContentsVO" resultType="EduContentsVO">
+	SELECT 
+			ECC.SEQ,
+			TITLE,
+			CATE1,
+			CATE2,
+			CATE3,
+			CATE1_NAME,
+			CATE2_NAME,
+			CATE3_NAME,
+			AUTHOR,
+			DESCRIPTION,
+			SUMMARY,
+			MC.REG_DATE,
+			DIFFICULTY,
+			SERVICE_TYPE,
+			CLASS_COUNT,
+			IS_CERTIFICATE,
+			IS_SERVICE,
+			EM.STORED_FILE_NAME,
+			EM.FILE_TYPE,
+			EM.FILE_PATH
+		FROM EDU_CONTENTS_CATEGORY ECC
+		INNER JOIN MY_CONTENTS MC
+		ON ECC.SEQ = MC.CONTENTS_SEQ
+		AND MC.USER_SEQ = #{userSeq}
+		LEFT JOIN EDU_MEDIA EM
+		ON ECC.SEQ = EM.CONTENTS_SEQ
+		AND EM.REFERENCE = 0
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ECC.${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ECC.SEQ LIKE CONCAT('%',#{q}, '%')
+						OR ECC.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR ECC.DIFFICULTY LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY ECC.SEQ ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'title'">
+		    	ORDER BY ECC.TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'difficulty'">
+		    	ORDER BY ECC.DIFFICULTY ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY MC.REG_DATE ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<select id="selectMyEduContentsListCnt" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM EDU_CONTENTS_CATEGORY ECC
+		INNER JOIN MY_CONTENTS MC
+		ON ECC.SEQ = MC.CONTENTS_SEQ
+		AND MC.USER_SEQ = #{userSeq}
+		LEFT JOIN EDU_MEDIA EM
+		ON ECC.SEQ = EM.CONTENTS_SEQ
+		AND EM.REFERENCE = 0;
+	</select>
+	
+	<select id="selectLikeContentsList" parameterType="EduContentsVO" resultType="EduContentsVO">
+	SELECT 			
+		ECC.SEQ,
+		ECC.TITLE,
+		ECC.CATE1,
+		ECC.CATE2,
+		ECC.CATE3,
+		ECC.CATE1_NAME,
+		ECC.CATE2_NAME,
+		ECC.CATE3_NAME,
+		ECC.AUTHOR,
+		ECC.DESCRIPTION,
+		ECC.SUMMARY,
+		ECC.REG_DATE,
+		ECC.SDATE,
+		ECC.DIFFICULTY,
+		ECC.SERVICE_TYPE,
+		ECC.CLASS_COUNT,
+		ECC.IS_CERTIFICATE,
+		ECC.IS_SERVICE,
+		EM.STORED_FILE_NAME,
+		EM.FILE_TYPE,
+		EM.FILE_PATH
+	FROM EDU_CONTENTS_CATEGORY ECC
+	LEFT OUTER JOIN EDU_MEDIA EM
+	ON ECC.SEQ = EM.CONTENTS_SEQ
+	AND EM.REFERENCE = 0
+	INNER JOIN BOARD_LIKE BL 
+	ON BL.BOARD_SEQ = ECC.SEQ
+	AND BL.USER_SEQ = #{userSeq}
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ECC.${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 
+						ECC.SEQ LIKE CONCAT('%',#{q}, '%')
+						OR ECC.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR ECC.DIFFICULTY LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+
+		<choose>
+			<when test="sortField == 'seq'">
+		    	ORDER BY ECC.SEQ ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'title'">
+		    	ORDER BY ECC.TITLE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'difficulty'">
+		    	ORDER BY ECC.DIFFICULTY ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY BL.SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<select id="selectLikeContentsListCnt" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM BOARD_LIKE
+		WHERE USER_SEQ = #{userSeq};
+	</select>
+	
+	<select id="selectLikeContents" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM BOARD_LIKE
+		WHERE USER_SEQ = #{userSeq} AND BOARD_SEQ = #{seq};
+	</select>
+	
+	<select id="selectIsMyContent" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM MY_CONTENTS
+		WHERE USER_SEQ = #{userSeq} AND CONTENTS_SEQ = #{seq};
+	</select>
+	
+	<select id="selectIsMyCart" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM MY_CART
+		WHERE USER_SEQ = #{userSeq} AND CONTENTS_SEQ = #{seq};
+	</select>
+	
+	<insert id="insertMyContent" parameterType="myContentsVO">
+		INSERT INTO MY_CONTENTS (
+			USER_SEQ,
+			CONTENTS_SEQ
+		) VALUES (
+			#{userSeq},
+			#{contentsSeq}
+		)
+	</insert>
+
+
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hf.elearning.blike.BoardLikeDao">
+
+	<!-- 좋아요 글 목록 수 -->
+	<select id="selectBoardLikeListCnt" resultType="java.lang.Integer" parameterType="BoardLikeVO">
+		SELECT 
+			COUNT(*) 
+		FROM BOARD_LIKE BL
+		LEFT JOIN USER U
+		ON (BL.USER_SEQ = U.SEQ)
+		LEFT JOIN EDU_CONTENTS EC
+		ON (BL.BOARD_SEQ = EC.SEQ)
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 	
+						BL.BOARD_TYPE LIKE CONCAT('%',#{q}, '%')
+						OR EC.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR U.ID LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 좋아요 글 목록 조회 -->
+	<select id="selectBoardLikeList" resultType="BoardLikeVO" parameterType="BoardLikeVO">
+		SELECT 
+			BL.SEQ,
+			BL.BOARD_TYPE,
+			EC.TITLE AS BOARD_TITLE,
+			BL.BOARD_SEQ,
+			BL.LIKE_DATE,
+			CASE 
+				WHEN BL.BOARD_TYPE = '컨텐츠' THEN (SELECT C.TITLE FROM CATEGORY C LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ)
+			END AS BOARD_CATE,
+			U.ID
+		FROM BOARD_LIKE BL
+		LEFT JOIN USER U
+		ON (BL.USER_SEQ = U.SEQ)
+		LEFT JOIN EDU_CONTENTS EC
+		ON (BL.BOARD_SEQ = EC.SEQ)
+		
+		<where>
+			1=1
+			<if test="q != null and q!= '' ">
+				<if test="qw != null and qw != '' ">
+					AND ${qw} LIKE CONCAT('%',#{q}, '%')
+				</if>
+				<if test="qw == null or qw == '' ">
+					AND 
+					( 	
+						BL.BOARD_TYPE LIKE CONCAT('%',#{q}, '%')
+						OR EC.TITLE LIKE CONCAT('%',#{q}, '%')
+						OR U.ID LIKE CONCAT('%',#{q}, '%')
+					)
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="sortField == 'likeDate'">
+		     	ORDER BY BL.LIKE_DATE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'boardType'">
+		    	ORDER BY BL.BOARD_TYPE ${sortOrderSQL}
+		    </when>
+			<when test="sortField == 'boardTitle'">
+		     	ORDER BY EC.TITLE ${sortOrderSQL}
+		    </when>
+		    <when test="sortField == 'id'">
+		     	ORDER BY U.ID ${sortOrderSQL}
+		    </when>
+		    <otherwise>
+		    	ORDER BY BL.SEQ ASC
+		    </otherwise>
+		</choose>
+		limit #{startNo}, #{recordCountPerPage}
+	</select>
+	
+	<!-- 카테고리별 좋아요 갯수 조회 -->
+	<select id="selectBoardLikeStatCountVO" resultType="BoardLikeStatVO" parameterType="BoardLikeVO">
+		SELECT COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='개발-프로그래밍11')) AS CATE1_FIRST,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='보안-네트워크')) AS CATE1_SECOND,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='데이터 사이언스')) AS CATE1_THIRD,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='크리에이티브')) AS CATE1_FOURTH,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='직무-마케팅')) AS CATE1_FIFTH,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='학문-외국어')) AS CATE1_SIXTH,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='커리어')) AS CATE1_SEVENTH,
+	   			COUNT((SELECT C.TITLE 
+	   			FROM CATEGORY C 
+	   			LEFT JOIN EDU_CONTENTS EC ON(C.P_SEQ = EC.CATE1) WHERE C.LEVEl=1 AND BL.SEQ = EC.SEQ AND C.TITLE='커리어')) AS CATE1_EIGHTH
+	   FROM BOARD_LIKE BL
+<!-- 		<where> -->
+<!-- 			1=1 -->
+<!-- 			<if test="q != null and q!= '' "> -->
+<!-- 				<if test="qw != null and qw != '' "> -->
+<!-- 					AND ${qw} LIKE CONCAT('%',#{q}, '%') -->
+<!-- 				</if> -->
+<!-- 				<if test="qw == null or qw == '' "> -->
+<!-- 					AND  -->
+<!-- 					( 	 -->
+<!-- 						BL.BOARD_TYPE LIKE CONCAT('%',#{q}, '%') -->
+<!-- 						OR BOARD_TITLE LIKE CONCAT('%',#{q}, '%') -->
+<!-- 						OR U.ID LIKE CONCAT('%',#{q}, '%') -->
+<!-- 					) -->
+<!-- 				</if> -->
+<!-- 			</if> -->
+<!-- 		</where> -->
+	</select>
+</mapper>
